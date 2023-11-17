@@ -5,14 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/menubackground"
-    tools:context=".HomePage">
+    tools:context=".BusinessHomePage">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Welcome to Halal Check"
+        android:textSize="20dp"
         android:textStyle="bold"
-        android:textSize="20dp"/>
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="40dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

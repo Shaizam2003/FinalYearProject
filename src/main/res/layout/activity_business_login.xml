@@ -26,7 +26,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Log In"
+        android:text="Business Log In"
         android:textColor="@color/purple"
         android:textSize="30dp"
         android:textStyle="bold"/>
@@ -83,7 +83,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have an account?"
+            android:text="Register a business account?"
             android:textSize="15dp"
             android:textColor="@color/black"
             android:textStyle="bold"/>
@@ -93,34 +93,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sign Up"
-            android:textSize="15dp"
-            android:textColor="@color/purple"
-            android:textStyle="bold"
-            android:layout_marginLeft="10dp"/>
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:gravity="center">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Business Users"
-            android:textSize="15dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/business_login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Login Here"
             android:textSize="15dp"
             android:textColor="@color/purple"
             android:textStyle="bold"

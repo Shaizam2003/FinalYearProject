@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/screen"
+    android:background="@drawable/menubackground"
     android:padding="40dp"
     android:orientation="vertical"
     tools:context=".RegisterPage">
@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="25dp"
-        android:textColor="@color/white"
+        android:textColor="@color/purple"
         android:text="Hello,"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -24,12 +24,12 @@
         app:layout_constraintVertical_bias="0.696" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="164dp"
         android:layout_height="wrap_content"
         android:text="Sign Up!"
-        android:textColor="@color/white"
+        android:textColor="@color/purple"
         android:textSize="30dp"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
@@ -71,11 +71,12 @@
 
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/phonenumber"
+            android:id="@+id/editTextPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Phone Number"
-            android:inputType="text|number" />
+            android:ems="10"
+            android:inputType="phone" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -87,12 +88,20 @@
 
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/postcode"
+            android:id="@+id/editTextTextPostalAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Post Code"
+            android:hint="Address"
+            android:ems="10"
             android:inputType="textPostalAddress" />
 
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -125,10 +134,39 @@
             android:layout_height="wrap_content"
             android:text="Sign In"
             android:textSize="15dp"
-            android:textColor="@color/white"
+            android:textColor="@color/purple"
             android:textStyle="bold"
             android:layout_marginLeft="10dp"/>
 
 
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Business registrations"
+            android:textSize="15dp"
+            android:textColor="@color/black"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/business_register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign Up"
+            android:textSize="15dp"
+            android:textColor="@color/purple"
+            android:textStyle="bold"
+            android:layout_marginLeft="10dp"/>
+
+
+    </LinearLayout>
+
 </LinearLayout>

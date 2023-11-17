@@ -7,7 +7,7 @@
     android:background="@drawable/menubackground"
     android:padding="40dp"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".RegisterPage">
 
 
     <TextView
@@ -16,7 +16,7 @@
         android:textStyle="bold"
         android:textSize="25dp"
         android:textColor="@color/purple"
-        android:text="Welcome,"
+        android:text="Hello,"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -26,7 +26,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Log In"
+        android:text="Register your Business"
         android:textColor="@color/purple"
         android:textSize="30dp"
         android:textStyle="bold"/>
@@ -34,7 +34,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="100dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
 
@@ -63,14 +63,69 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/sign_in"
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Phone Number"
+            android:ems="10"
+            android:inputType="phone" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextTextPostalAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Address"
+            android:ems="10"
+            android:inputType="textPostalAddress" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="332dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+        <Spinner
+            android:id="@+id/businessTypeSpinner"
+            android:layout_width="332dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="10dp"
+            android:entries="@array/business_types"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/sign_up"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="20dp"
-        android:text="Sign in"
+        android:text="Submit"
         android:layout_marginTop="20dp"/>
 
     <LinearLayout
@@ -83,16 +138,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Don't have an account?"
+            android:text="Already have a business account?"
             android:textSize="15dp"
             android:textColor="@color/black"
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/sign_up"
+            android:id="@+id/sign_in"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign Up"
+            android:text="Sign In"
             android:textSize="15dp"
             android:textColor="@color/purple"
             android:textStyle="bold"
@@ -101,31 +156,4 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:gravity="center">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Business Users"
-            android:textSize="15dp"
-            android:textColor="@color/black"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/business_login"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Login Here"
-            android:textSize="15dp"
-            android:textColor="@color/purple"
-            android:textStyle="bold"
-            android:layout_marginLeft="10dp"/>
-
-
-    </LinearLayout>
 </LinearLayout>

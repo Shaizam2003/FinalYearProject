@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,6 +16,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,8 +83,12 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
+                                // Retrieve user information from the Realtime Database
+                                  //  retrieveUserInfoFromDatabase(email);
+
                                     Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(MainActivity.this, HomePage.class);
+                                    Intent intent = new Intent(MainActivity.this, MenuClass.class);
+                                    intent.putExtra("USER_EMAIL", email);
                                     startActivity(intent);
                                     finish();
                                 } else {
@@ -90,6 +100,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-}
 
+    private void retrieveUserInfoFromDatabase(String email) {
+        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference("users");
+        String userId = email.replace(".", "_");
+
+        usersRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    CustomerInfo customerInfo = dataSnapshot.getValue(CustomerInfo.class);
+
+                    // Do something with the retrieved user information
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors
+            }
+        });
+    }
+}
 

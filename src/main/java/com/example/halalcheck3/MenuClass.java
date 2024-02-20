@@ -48,11 +48,55 @@ import java.util.List;
 
 
 
+// MenuClass.java
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import java.util.ArrayList;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import java.util.ArrayList;
+
 public class MenuClass extends AppCompatActivity {
 
     private ListView menuListView;
     private ArrayList<String> menuItems;
     private ArrayAdapter<String> menuAdapter;
+
+    private RecyclerView cartRecyclerView;
+    private CartAdapter cartAdapter;
+    private List<MenuItem> cartItems;
+
+    private Button checkoutButton;
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,24 +108,37 @@ public class MenuClass extends AppCompatActivity {
         menuAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, menuItems);
         menuListView.setAdapter(menuAdapter);
 
+        cartRecyclerView = findViewById(R.id.cartRecyclerView);
+        cartItems = new ArrayList<>(); // Initialize cartItems list
+        cartAdapter = new CartAdapter(this, cartItems); // Pass context along with cartItems
+        cartRecyclerView.setAdapter(cartAdapter);
+        cartRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        checkoutButton = findViewById(R.id.checkoutButton);
+
         // Read menu items from Firebase Realtime Database
         readMenuItems();
 
-        // Assuming checkoutButton is declared in your XML layout
-        Button checkoutButton = findViewById(R.id.checkoutButton);
+        menuListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Handle item click
+                addToCart(position);
+            }
+        });
 
-        // Set onClickListener for the checkoutButton
         checkoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Open another activity when the checkout button is clicked
+                // Navigate to the checkout activity
                 startActivity(new Intent(MenuClass.this, PaymentActivity.class));
             }
         });
     }
 
     private void readMenuItems() {
-        DatabaseReference menuRef = FirebaseDatabase.getInstance().getReference().child("Menu");
+        String userId = firebaseAuth.getCurrentUser().getUid();
+        DatabaseReference menuRef = FirebaseDatabase.getInstance().getReference().child("Menu").child(userId);
 
         menuRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -96,9 +153,9 @@ public class MenuClass extends AppCompatActivity {
                     if (menuItem != null) {
                         String itemName = menuItem.getItemName();
                         double itemPrice = menuItem.getItemPrice();
-                        Log.d("MenuClass", "Item: " + itemName + ", Price: " + itemPrice);
+                        Log.d("MenuClass", "Item: " + itemName + ", Price: " + String.valueOf( itemPrice));
 
-                        String itemInfo = itemName + ": $" + itemPrice;
+                        String itemInfo = itemName + ": $" + String.valueOf(itemPrice);
                         menuItems.add(itemInfo);
                     }
                 }
@@ -118,4 +175,37 @@ public class MenuClass extends AppCompatActivity {
             }
         });
     }
+
+    private void addToCart(int position) {
+        DatabaseReference menuRef = FirebaseDatabase.getInstance().getReference("menu");
+        menuRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Iterable<DataSnapshot> menuItems = snapshot.getChildren();
+                int count = 0;
+
+                for (DataSnapshot menuItemSnapshot : menuItems) {
+                    if (count == position) {
+                        MenuItem selectedItem = menuItemSnapshot.getValue(MenuItem.class);
+
+                        if (selectedItem != null) {
+                            cartItems.add(selectedItem);
+                            cartAdapter.notifyDataSetChanged();
+                            // Display toast message
+                            Toast.makeText(MenuClass.this, "Item added to cart", Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                    }
+
+                    count++;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("MenuClass", "Error fetching menu items: " + error.getMessage());
+            }
+        });
+    }
+
 }

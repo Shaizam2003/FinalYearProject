@@ -5,31 +5,33 @@
     android:layout_height="match_parent"
     tools:context=".MenuClass">
 
-    <LinearLayout
-        android:id="@+id/cartLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <Button
-            android:id="@+id/checkoutButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Checkout" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/cartRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"/>
-    </LinearLayout>
-
+    <!-- Menu ListView -->
     <ListView
         android:id="@+id/menuListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/cartLayout"
-        android:padding="16dp"/>
+        android:layout_height="wrap_content"
+        android:layout_above="@id/cartRecyclerView"
+        android:padding="8dp" />
+
+    <!-- Cart RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/cartRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/checkoutButton"
+        android:layout_marginTop="16dp"
+        android:padding="8dp"
+        android:visibility="visible"
+        android:scrollbars="vertical" />
+
+    <!-- Checkout Button -->
+    <Button
+        android:id="@+id/checkoutButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp"
+        android:text="Checkout" />
+
 </RelativeLayout>

@@ -6,6 +6,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.halalcheck3.adapter.CartAdapter;
+import com.example.halalcheck3.model.MenuItem;
+
 import java.util.ArrayList;
 
 public class CartActivity extends AppCompatActivity {

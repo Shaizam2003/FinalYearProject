@@ -1,46 +1,99 @@
 package com.example.halalcheck3;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.halalcheck3.adapter.CartAdapter;
-import com.example.halalcheck3.model.MenuItem;
-
+import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.halalcheck3.adapter.MyCartAdapter;
+import com.example.halalcheck3.eventbus.MyUpdateCartEvent;
+import com.example.halalcheck3.listener.ICartLoadListener;
+import com.example.halalcheck3.model.CartModel;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
+import java.util.List;
 
-public class CartActivity extends AppCompatActivity {
+public class CartActivity extends AppCompatActivity implements ICartLoadListener {
 
-    private ListView cartListView;
-    private ArrayList<MenuItem> cartItems;
-    private CartAdapter cartAdapter;
+    private RecyclerView recyclerCart;
+    private RelativeLayout mainLayout;
+    private ImageView btnBlack;
+    private TextView txtTotal;
+
+    private MyCartAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
-        // Get the cart items from the intent
-       // cartItems = getIntent().getParcelableArrayListExtra("cartItems");
+        recyclerCart = findViewById(R.id.recycler_cart);
+        mainLayout = findViewById(R.id.cartLayout);
+        btnBlack = findViewById(R.id.btnBlack);
+        txtTotal = findViewById(R.id.txtTotal);
 
-        // Initialize the ListView and Adapter
-        cartListView = findViewById(R.id.cartListView);
-        cartAdapter = new CartAdapter(this, cartItems);
-       // cartListView.setAdapter(cartAdapter);
+        init();
+        loadCartFromFirebase(); // Call to retrieve cart items from Firebase
+    }
 
-        // Assuming you have a button for checkout in your layout
-        Button checkoutButton = findViewById(R.id.checkoutButton);
 
-        // Set onClickListener for the checkoutButton
-        checkoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Open another activity when the checkout button is clicked
-                startActivity(new Intent(CartActivity.this, PaymentActivity.class));
-            }
-        });
+    private void loadCartFromFirebase() {
+        List<CartModel> cartModels = new ArrayList<>();
+        FirebaseDatabase.getInstance()
+                .getReference("Cart")
+                .child("UNIQUE_USER_ID")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            for (DataSnapshot cartSnapshot : snapshot.getChildren()) {
+                                CartModel cartModel = cartSnapshot.getValue(CartModel.class);
+                                cartModel.setKey(cartSnapshot.getKey());
+                                cartModels.add(cartModel);
+                            }
+                            onCartLoadSuccess(cartModels);
+                        } else
+                            onCartLoadFailed("Cart Empty");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        onCartLoadFailed(error.getMessage());
+                    }
+                });
+    }
+
+    private void init() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerCart.setLayoutManager(layoutManager);
+        recyclerCart.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
+        btnBlack.setOnClickListener(v -> finish());
+    }
+
+    @Override
+    public void onCartLoadSuccess(List<CartModel> cartModelList) {
+        double sum = 0;
+        for (CartModel cartModel : cartModelList) {
+            sum += cartModel.getTotalPrice();
+        }
+        txtTotal.setText(new StringBuilder("€").append(sum));
+        adapter = new MyCartAdapter(this, cartModelList);
+        recyclerCart.setAdapter(adapter);
+    }
+
+    @Override
+    public void onCartLoadFailed(String message) {
+        Snackbar.make(mainLayout, message, Snackbar.LENGTH_LONG).show();
     }
 }

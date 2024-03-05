@@ -10,5 +10,5 @@ public interface ICartLoadListener {
     void onCartLoadSuccess(List<CartModel> cartModelList);
     void onCartLoadFailed(String message);
 
-    void OnCartLoadFailed(String message);
+   // void OnCartLoadFailed(String message);
 }

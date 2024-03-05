@@ -37,11 +37,13 @@ public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuView
 
     private Context context;
     private List<MenuItem> menuItemList;
+    private DatabaseReference userCartRef;
     private ICartLoadListener iCartLoadListener;
 
-    public MyMenuAdapter(Context context, List<MenuItem> menuItemList, ICartLoadListener iCartLoadListener) {
-        this.context = context;
+    public MyMenuAdapter(Context context, List<MenuItem> menuItemList, DatabaseReference userCartRef, ICartLoadListener iCartLoadListener) {
+        this.context = context.getApplicationContext(); // Use application context to prevent memory leaks
         this.menuItemList = menuItemList;
+        this.userCartRef = userCartRef;
         this.iCartLoadListener = iCartLoadListener;
     }
 
@@ -56,54 +58,39 @@ public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuView
     public void onBindViewHolder(@NonNull MyMenuViewHolder holder, int position) {
         MenuItem menuItem = menuItemList.get(position);
         holder.txtName.setText(menuItem.getItemName());
-        holder.txtPrice.setText("$" + menuItem.getItemPrice());
+        holder.txtPrice.setText("€" + menuItem.getItemPrice());
 
-        holder.setListener((view, adapterPosition) -> {
-            addToCart(menuItemList.get(adapterPosition)); // Use adapterPosition to get correct item
-        });
+        holder.itemView.setOnClickListener(v -> addToCart(menuItem));
     }
 
     private void addToCart(MenuItem menuItem) {
-        DatabaseReference userCart = FirebaseDatabase
-                .getInstance()
-                .getReference("Cart")
-                .child("UNIQUE_USER_ID");
-
-        userCart.child(String.valueOf(menuItemList.indexOf(menuItem))) // Use indexOf to get position as key
-                .addListenerForSingleValueEvent(new ValueEventListener(){
-
+        userCartRef.child(String.valueOf(menuItemList.indexOf(menuItem)))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if(snapshot.exists()) //if user already have item in cart
-                        {
-                            //just update the quantity and totalPrice
+                        if (snapshot.exists()) {
                             CartModel cartModel = snapshot.getValue(CartModel.class);
-                            cartModel.setQuantity(cartModel.getQuantity() + 1);
-                            Map<String,Object> updateData = new HashMap<>();
-                            updateData.put("quantity", cartModel.getQuantity());
-                            updateData.put("totalPrice", cartModel.getQuantity() * Float.parseFloat(cartModel.getPrice()));
+                            if (cartModel != null) {
+                                cartModel.setQuantity(cartModel.getQuantity() + 1);
+                                Map<String, Object> updateData = new HashMap<>();
+                                updateData.put("quantity", cartModel.getQuantity());
+                                updateData.put("totalPrice", cartModel.getQuantity() * Float.parseFloat(cartModel.getPrice()));
 
-                            userCart.child(String.valueOf(menuItemList.indexOf(menuItem))) // Use indexOf to get position as key
-                                    .updateChildren(updateData)
-                                    .addOnSuccessListener(aVoid ->  {
-                                        iCartLoadListener.onCartLoadSuccess(new ArrayList<>()); // Passing an empty list
-                                    })
-                                    .addOnFailureListener(e -> iCartLoadListener.onCartLoadFailed(e.getMessage()));
-
-                        }
-                        else //if Items are not in Cart, add!
-                        {
+                                userCartRef.child(String.valueOf(menuItemList.indexOf(menuItem)))
+                                        .updateChildren(updateData)
+                                        .addOnSuccessListener(aVoid -> iCartLoadListener.onCartLoadSuccess(new ArrayList<>()))
+                                        .addOnFailureListener(e -> iCartLoadListener.onCartLoadFailed(e.getMessage()));
+                            }
+                        } else {
                             CartModel cartModel = new CartModel();
                             cartModel.setName(menuItem.getItemName());
                             cartModel.setPrice(menuItem.getItemPrice());
                             cartModel.setQuantity(1);
                             cartModel.setTotalPrice(Float.parseFloat(menuItem.getItemPrice()));
 
-                            userCart.child(String.valueOf(menuItemList.indexOf(menuItem))) // Use indexOf to get position as key
+                            userCartRef.child(String.valueOf(menuItemList.indexOf(menuItem)))
                                     .setValue(cartModel.toMap())
-                                    .addOnSuccessListener(aVoid ->  {
-                                        iCartLoadListener.onCartLoadSuccess(new ArrayList<>()); // Passing an empty list
-                                    })
+                                    .addOnSuccessListener(aVoid -> iCartLoadListener.onCartLoadSuccess(new ArrayList<>()))
                                     .addOnFailureListener(e -> iCartLoadListener.onCartLoadFailed(e.getMessage()));
                         }
                         EventBus.getDefault().postSticky(new MyUpdateCartEvent());
@@ -112,7 +99,6 @@ public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuView
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         iCartLoadListener.onCartLoadFailed(error.getMessage());
-
                     }
                 });
     }
@@ -122,34 +108,15 @@ public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuView
         return menuItemList.size();
     }
 
-    public class MyMenuViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MyMenuViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageView;
         TextView txtName;
         TextView txtPrice;
-
-        IRecyclerViewClickListener listener;
-
-        public void setListener(IRecyclerViewClickListener listener) {
-            this.listener = listener;
-        }
-
 
         public MyMenuViewHolder(@NonNull View itemView) {
             super(itemView);
             txtName = itemView.findViewById(R.id.txtName);
             txtPrice = itemView.findViewById(R.id.txtPrice);
-            itemView.setOnClickListener(this);
-
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (listener != null) {
-                listener.onRecyclerClick(v, getAdapterPosition());
-            }
-            // Display a Snackbar message indicating that the item has been added to the cart
-            Snackbar.make(itemView, "Item added to cart", Snackbar.LENGTH_SHORT).show();
         }
     }
 }

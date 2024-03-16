@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,82 +40,65 @@ public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuView
     private List<MenuItem> menuItemList;
     private DatabaseReference userCartRef;
     private ICartLoadListener iCartLoadListener;
+    private List<MenuItem> selectedItems; // ArrayList to store selected menu items
 
     public MyMenuAdapter(Context context, List<MenuItem> menuItemList, DatabaseReference userCartRef, ICartLoadListener iCartLoadListener) {
         this.context = context.getApplicationContext(); // Use application context to prevent memory leaks
         this.menuItemList = menuItemList;
         this.userCartRef = userCartRef;
         this.iCartLoadListener = iCartLoadListener;
+        this.selectedItems = new ArrayList<>(); // Initialize selected items ArrayList
     }
 
     @NonNull
     @Override
     public MyMenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Inflate the item layout and create a ViewHolder
         View itemView = LayoutInflater.from(context).inflate(R.layout.layout_menu_item, parent, false);
         return new MyMenuViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyMenuViewHolder holder, int position) {
+        // Bind data to ViewHolder
         MenuItem menuItem = menuItemList.get(position);
         holder.txtName.setText(menuItem.getItemName());
         holder.txtPrice.setText("€" + menuItem.getItemPrice());
 
-        holder.itemView.setOnClickListener(v -> addToCart(menuItem));
+        // Handle item click event
+        holder.itemView.setOnClickListener(v -> {
+            addToCart(menuItem); // Add selected item to cart
+        });
     }
 
     private void addToCart(MenuItem menuItem) {
-        userCartRef.child(String.valueOf(menuItemList.indexOf(menuItem)))
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            CartModel cartModel = snapshot.getValue(CartModel.class);
-                            if (cartModel != null) {
-                                cartModel.setQuantity(cartModel.getQuantity() + 1);
-                                Map<String, Object> updateData = new HashMap<>();
-                                updateData.put("quantity", cartModel.getQuantity());
-                                updateData.put("totalPrice", cartModel.getQuantity() * Float.parseFloat(cartModel.getPrice()));
+        // Add the selected item to the selectedItems ArrayList
+        selectedItems.add(menuItem);
 
-                                userCartRef.child(String.valueOf(menuItemList.indexOf(menuItem)))
-                                        .updateChildren(updateData)
-                                        .addOnSuccessListener(aVoid -> iCartLoadListener.onCartLoadSuccess(new ArrayList<>()))
-                                        .addOnFailureListener(e -> iCartLoadListener.onCartLoadFailed(e.getMessage()));
-                            }
-                        } else {
-                            CartModel cartModel = new CartModel();
-                            cartModel.setName(menuItem.getItemName());
-                            cartModel.setPrice(menuItem.getItemPrice());
-                            cartModel.setQuantity(1);
-                            cartModel.setTotalPrice(Float.parseFloat(menuItem.getItemPrice()));
+        // Optionally, you can display a message or perform any other action here
+        Toast.makeText(context, menuItem.getItemName() + " added to cart", Toast.LENGTH_SHORT).show();
+    }
 
-                            userCartRef.child(String.valueOf(menuItemList.indexOf(menuItem)))
-                                    .setValue(cartModel.toMap())
-                                    .addOnSuccessListener(aVoid -> iCartLoadListener.onCartLoadSuccess(new ArrayList<>()))
-                                    .addOnFailureListener(e -> iCartLoadListener.onCartLoadFailed(e.getMessage()));
-                        }
-                        EventBus.getDefault().postSticky(new MyUpdateCartEvent());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        iCartLoadListener.onCartLoadFailed(error.getMessage());
-                    }
-                });
+    public List<MenuItem> getSelectedItems() {
+        // Getter method to retrieve selected items
+        return selectedItems;
     }
 
     @Override
     public int getItemCount() {
+        // Return the total number of items in the data set
         return menuItemList.size();
     }
 
     public class MyMenuViewHolder extends RecyclerView.ViewHolder {
 
+        // ViewHolder class to hold item views
         TextView txtName;
         TextView txtPrice;
 
         public MyMenuViewHolder(@NonNull View itemView) {
             super(itemView);
+            // Initialize views
             txtName = itemView.findViewById(R.id.txtName);
             txtPrice = itemView.findViewById(R.id.txtPrice);
         }

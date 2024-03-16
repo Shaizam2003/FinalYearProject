@@ -13,6 +13,7 @@ import com.example.halalcheck3.adapter.MyCartAdapter;
 import com.example.halalcheck3.eventbus.MyUpdateCartEvent;
 import com.example.halalcheck3.listener.ICartLoadListener;
 import com.example.halalcheck3.model.CartModel;
+import com.example.halalcheck3.model.MenuItem;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,34 +45,39 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
         txtTotal = findViewById(R.id.txtTotal);
 
         init();
-        loadCartFromFirebase(); // Call to retrieve cart items from Firebase
+
+        // Retrieve selected items from intent
+        List<MenuItem> selectedItems = (List<MenuItem>) getIntent().getSerializableExtra("selectedItems");
+
+        // Convert MenuItem objects to CartModel objects
+        List<CartModel> cartModels = convertToCartModels(selectedItems);
+
+        // Display selected items in the cart
+        displaySelectedItems(cartModels);
+    }
+
+    private List<CartModel> convertToCartModels(List<MenuItem> selectedItems) {
+        List<CartModel> cartModels = new ArrayList<>();
+        for (MenuItem item : selectedItems) {
+            CartModel cartModel = new CartModel();
+            cartModel.setName(item.getItemName());
+            cartModel.setPrice(item.getItemPrice());
+            cartModel.setQuantity(1);
+            cartModel.setTotalPrice(Float.parseFloat(item.getItemPrice()));
+            cartModels.add(cartModel);
+        }
+        return cartModels;
     }
 
 
-    private void loadCartFromFirebase() {
-        List<CartModel> cartModels = new ArrayList<>();
-        FirebaseDatabase.getInstance()
-                .getReference("Cart")
-                .child("UNIQUE_USER_ID")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            for (DataSnapshot cartSnapshot : snapshot.getChildren()) {
-                                CartModel cartModel = cartSnapshot.getValue(CartModel.class);
-                                cartModel.setKey(cartSnapshot.getKey());
-                                cartModels.add(cartModel);
-                            }
-                            onCartLoadSuccess(cartModels);
-                        } else
-                            onCartLoadFailed("Cart Empty");
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        onCartLoadFailed(error.getMessage());
-                    }
-                });
+    private void displaySelectedItems(List<CartModel> cartModels) {
+        double sum = 0;
+        for (CartModel cartModel : cartModels) {
+            sum += cartModel.getTotalPrice();
+        }
+        txtTotal.setText(new StringBuilder("€").append(sum));
+        adapter = new MyCartAdapter(this, cartModels);
+        recyclerCart.setAdapter(adapter);
     }
 
     private void init() {
@@ -83,13 +89,7 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
 
     @Override
     public void onCartLoadSuccess(List<CartModel> cartModelList) {
-        double sum = 0;
-        for (CartModel cartModel : cartModelList) {
-            sum += cartModel.getTotalPrice();
-        }
-        txtTotal.setText(new StringBuilder("€").append(sum));
-        adapter = new MyCartAdapter(this, cartModelList);
-        recyclerCart.setAdapter(adapter);
+        // Not used in this activity
     }
 
     @Override

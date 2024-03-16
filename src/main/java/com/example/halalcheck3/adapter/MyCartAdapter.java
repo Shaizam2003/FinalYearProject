@@ -78,9 +78,9 @@ public class MyCartAdapter extends RecyclerView.Adapter<MyCartAdapter.MyCartView
         holder.btnDelete.setOnClickListener(v -> {
             AlertDialog dialog = new AlertDialog.Builder(context)
                     .setTitle("Delete Item")
-                    .setMessage("Do you really want to delete item")
+                    .setMessage("Are you sure you want to Delete")
                     .setNegativeButton("CANCEL", (dialog1, which) -> dialog1.dismiss())
-                    .setPositiveButton("OK", (dialog12, which) -> {
+                    .setPositiveButton("YES", (dialog12, which) -> {
                         // Temp Removed
                         notifyItemRemoved(position);
                         deleteFromFirebase(cartModelList.get(position));

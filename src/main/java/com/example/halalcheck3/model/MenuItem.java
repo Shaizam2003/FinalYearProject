@@ -1,6 +1,8 @@
 package com.example.halalcheck3.model;
 
-public class MenuItem {
+import java.io.Serializable;
+
+public class MenuItem implements Serializable {
 
     private String itemName;
 

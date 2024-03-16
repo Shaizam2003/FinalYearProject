@@ -121,7 +121,15 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
 
         recyclerMenu.setAdapter(menuAdapter);
 
-        btnCart.setOnClickListener(v -> startActivity(new Intent(this, CartActivity.class)));
+        btnCart.setOnClickListener(v -> {
+            // Retrieve selected menu items from the adapter
+            List<MenuItem> selectedItems = menuAdapter.getSelectedItems();
+
+            // Pass the selected items to CartActivity
+            Intent intent = new Intent(this, CartActivity.class);
+            intent.putExtra("selectedItems", new ArrayList<>(selectedItems));
+            startActivity(intent);
+        });
     }
 
     @Override

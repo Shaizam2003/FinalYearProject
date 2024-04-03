@@ -1,7 +1,11 @@
 package com.example.halalcheck3;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,7 +35,7 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
     private RelativeLayout mainLayout;
     private ImageView btnBlack;
     private TextView txtTotal;
-
+    private Button btnCheckout;
     private MyCartAdapter adapter;
 
     @Override
@@ -43,6 +47,7 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
         mainLayout = findViewById(R.id.cartLayout);
         btnBlack = findViewById(R.id.btnBlack);
         txtTotal = findViewById(R.id.txtTotal);
+        btnCheckout = findViewById(R.id.btnCheckout); // Initialize checkout button
 
         init();
 
@@ -54,6 +59,16 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
 
         // Display selected items in the cart
         displaySelectedItems(cartModels);
+
+        // Set OnClickListener for the checkout button
+        btnCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate to PaymentActivity
+                Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private List<CartModel> convertToCartModels(List<MenuItem> selectedItems) {
@@ -68,7 +83,6 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
         }
         return cartModels;
     }
-
 
     private void displaySelectedItems(List<CartModel> cartModels) {
         double sum = 0;

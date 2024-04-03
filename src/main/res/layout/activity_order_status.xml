@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textViewHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="We have received your order. You can track the status of your order below!"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/textViewPreparation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Preparation"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_below="@id/textViewHeading"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewQualityCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quality Check"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_below="@id/textViewPreparation"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewOutForDelivery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Out for Delivery"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_below="@id/textViewQualityCheck"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewDelivered"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delivered"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_below="@id/textViewOutForDelivery"
+        android:layout_marginBottom="8dp"/>
+
+</RelativeLayout>

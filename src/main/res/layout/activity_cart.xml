@@ -35,13 +35,20 @@
 
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnCheckout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Checkout"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_cart"
         android:padding="8dp"
         android:layout_below="@+id/panel"
+        android:layout_above="@id/btnCheckout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        />
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

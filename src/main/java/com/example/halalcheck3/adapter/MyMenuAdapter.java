@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.halalcheck3.MenuClass;
 import com.example.halalcheck3.R;
+import com.example.halalcheck3.RestaurantMenuActivity;
 import com.example.halalcheck3.eventbus.MyUpdateCartEvent;
 import com.example.halalcheck3.listener.ICartLoadListener;
 import com.example.halalcheck3.listener.IRecyclerViewClickListener;
@@ -47,6 +48,12 @@ public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuView
         this.menuItemList = menuItemList;
         this.userCartRef = userCartRef;
         this.iCartLoadListener = iCartLoadListener;
+        this.selectedItems = new ArrayList<>(); // Initialize selected items ArrayList
+    }
+
+    public MyMenuAdapter(RestaurantMenuActivity context, List<MenuItem> menuItems) {
+        this.context = context; // Use activity context
+        this.menuItemList = menuItems;
         this.selectedItems = new ArrayList<>(); // Initialize selected items ArrayList
     }
 
@@ -86,8 +93,7 @@ public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuView
 
     @Override
     public int getItemCount() {
-        // Return the total number of items in the data set
-        return menuItemList.size();
+        return menuItemList != null ? menuItemList.size() : 0;
     }
 
     public class MyMenuViewHolder extends RecyclerView.ViewHolder {

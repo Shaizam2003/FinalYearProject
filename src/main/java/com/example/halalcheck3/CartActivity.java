@@ -28,8 +28,9 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class CartActivity extends AppCompatActivity implements ICartLoadListener {
+public class CartActivity extends AppCompatActivity {
 
     private RecyclerView recyclerCart;
     private RelativeLayout mainLayout;
@@ -76,9 +77,9 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
         for (MenuItem item : selectedItems) {
             CartModel cartModel = new CartModel();
             cartModel.setName(item.getItemName());
-            cartModel.setPrice(item.getItemPrice());
+            cartModel.setPrice(item.getItemPrice()); // Parse item price to double
             cartModel.setQuantity(1);
-            cartModel.setTotalPrice(Float.parseFloat(item.getItemPrice()));
+            cartModel.setTotalPrice(item.getItemPrice()); // Parse item price to double
             cartModels.add(cartModel);
         }
         return cartModels;
@@ -89,7 +90,7 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
         for (CartModel cartModel : cartModels) {
             sum += cartModel.getTotalPrice();
         }
-        txtTotal.setText(new StringBuilder("€").append(sum));
+        txtTotal.setText(String.format(Locale.getDefault(), "€%.2f", sum)); // Format sum to display as currency
         adapter = new MyCartAdapter(this, cartModels);
         recyclerCart.setAdapter(adapter);
     }
@@ -99,15 +100,5 @@ public class CartActivity extends AppCompatActivity implements ICartLoadListener
         recyclerCart.setLayoutManager(layoutManager);
         recyclerCart.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
         btnBlack.setOnClickListener(v -> finish());
-    }
-
-    @Override
-    public void onCartLoadSuccess(List<CartModel> cartModelList) {
-        // Not used in this activity
-    }
-
-    @Override
-    public void onCartLoadFailed(String message) {
-        Snackbar.make(mainLayout, message, Snackbar.LENGTH_LONG).show();
     }
 }

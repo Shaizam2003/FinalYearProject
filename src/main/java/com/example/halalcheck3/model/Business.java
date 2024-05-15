@@ -41,7 +41,7 @@ public class Business {
     }
 
     public Business() {
-        // Default constructor required for Firebase
+        // Default constructor required for FirebaseUtil
     }
 
     public Business(String email, String phone, String address, String password) {

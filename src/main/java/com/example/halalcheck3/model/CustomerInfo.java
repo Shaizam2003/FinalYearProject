@@ -1,5 +1,6 @@
 package com.example.halalcheck3.model;
 
+
 public class CustomerInfo {
         private String email;
         private String password;

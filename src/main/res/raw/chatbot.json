@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "halalcheck",
+  "private_key_id": "37a648d7f73494a655031a1ceaa24d4b0f04c2ea",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDlnPCCag/Nsowk\nkv3FwYoqQH2IoAfifLm2iKG2cAQNxpbhX1u9WqO1ey6h3X8HT92lVjseUctkhmJi\nGwkeEKKOZNvk8RDG7R483tGYdGspBclHwSVRn6iXAGjbFKYlddNZ7VDlKwogyMFj\nIokxFFT0t/waeqMDlFIjMkb9qfpX5BQRf2I2LG2094TkH1MGx48QyR1MfiFwOAjx\nE28Nsbl/i1X0BoDQamwiWIi6bUaQ/xitDyOsRy/EwkshJUMLazLLw4hbVb1B8ooC\nhJW1Na3eGm1h73YRxsi5/pcy0C59uSSIzIvY4bzO72iNkt9RliKcZrwJO/r/6cuQ\nic+V439xAgMBAAECggEAAZj982pZgczkPLzpFx8pnvGj7fdvFpxXjnWU6ngNDyt6\nkUbglIi06uZYhLfN0nczy5q1/pgDGkf1F0mo3pSvDN6WyRkETN4Jf9LtEmp89GQd\n6mnloJPD0IkoMZ4LKeeP+Og1z+Jkx6Wd8tqiqbzCepFtJ6IC0FuP1r7az5kHLOVd\n/fVBE9iaNbnBk34uYNgOeTQJribAT0VT3ke0yRcmSkJk90dr3P6wJSY/08nWjP+j\n93uQJCAlxVIeHlATrtvqrQNFlCv0YjUyX77r/pC3pQHMiOM5zBqVdQzhIi+0qpwp\n0IMq4PAx+f7nJYFobkb4iCXQt8VVk95D+ORslHrMIQKBgQD8apjUIacK8/kvPIr8\n3uW6wGJ3hZgBafCyRkmZdnR45dHDkntKf56zhAhtZqc0+5jmfr/20RYmlzQEeS5a\nB1TQmSsOWGFsO8dou/OsaWUQC4/3A7T3M3vIzpLTYecBZUeXeYLlGjpSvfecqPPp\nyhQL8whUqNPfq4QK/kL1isutdwKBgQDo33bQ1LNjsUsT1KDCfhgbd2mFG/1x+iGl\ne96Rxm8A7qyIdYlytqllnzbbTlj3ShBSHJu8wBUGG6dK59rXpf8Q1W6Zwzdfh4bf\nn6nCSStyMAvXqra+HzOqyqupZKZzp7JvfMWAgorUoDGKinwwF5A7FhYO6Dyu3XfO\nhJSfJmPUVwKBgQDMh9OukFY6mdagX/5/SF3+JUWkc6vn+WAAFNQudb2K+S4vutIM\nW7zM2X+6piN22yfaHXqPFH1OZ9bOiSL18FrZbENnLFZEzWuXgjTAz+YESlotXeOV\nKzJyVHDEt9/nUZnhM6TM36PCyAuL9ZsvJX9470Ug1GxaITCtd7nqHL1NoQKBgEP0\nEYPWzZIlxja/MToP+ZDqQ4xoIokD6JWVk9kOAo5PF2GqirVCwCO7VhKgxi1DG4ga\neQeXNYtWvnaJOb773XZYEbIk2R+zOJRAzxS2rUrg4lPIqRLJoBYSlg0UJc5R/Suz\nSR66+TAantpClwKhnaDgTQeElVChp7hHz+axGSh5AoGBALjao7vIuCxGN7Vg14jU\ndxDfZcEfw90h9zc6tr8eRaK3o2TqhmFPCweZzA6LPJeEpzCpja5VQSMjOo0EH1RB\ncx9jhUBtcuQcE3l+E5aKJLQx+apZk6AkvsnpCR48t7dM23a7/uHC7RFX+RYTILZl\nGim+t9VhNkl0Yw59fqyHF69D\n-----END PRIVATE KEY-----\n",
+  "client_email": "deliverydriverchatbot@halalcheck.iam.gserviceaccount.com",
+  "client_id": "112518370313336136206",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/deliverydriverchatbot%40halalcheck.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

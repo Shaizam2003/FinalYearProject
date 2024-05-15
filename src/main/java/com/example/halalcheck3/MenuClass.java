@@ -79,8 +79,9 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
         countCartItem();
     }
 
+    //Create another function like below for the Business User Id
     private void loadMenuFromFirebase() {
-        String userId = firebaseAuth.getCurrentUser().getUid();
+        String userId = firebaseAuth.getCurrentUser().getUid(); //Need to change userId to businessId
         DatabaseReference menuRef = FirebaseDatabase.getInstance().getReference().child("Menu").child(userId);
 
         menuRef.addValueEventListener(new ValueEventListener() {

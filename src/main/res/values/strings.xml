@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">HalalCheck3</string>
+    <string name="send_message_button_description">Send Message</string>
+    <string name="back_button_description">Back</string>
+    <string name="toolbar_description">Back</string>
 
     <string-array name="business_types">
         <item>Select Option</item>
@@ -10,4 +13,7 @@
     <style name="OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <!-- Add any additional styling for the outlined box here -->
     </style>
+
+    <string name="google_maps_key">AIzaSyCgEFEG8_Tg371o93947514UNTmKahGwkU</string>
+
 </resources>

@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                                   //  retrieveUserInfoFromDatabase(email);
 
                                     Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(MainActivity.this, MenuClass.class);
+                                    Intent intent = new Intent(MainActivity.this, CurrentLocationActivity.class);
                                     intent.putExtra("USER_EMAIL", email);
                                     startActivity(intent);
                                     finish();

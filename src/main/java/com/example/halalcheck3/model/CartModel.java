@@ -2,12 +2,16 @@ package com.example.halalcheck3.model;
 
 public class CartModel {
 
-    private String key,name,image,price;
+    private String key, name, image;
+    private double price; // Changed from String to double
     private int quantity;
-    private float totalPrice;
+    private double totalPrice; // Changed from float to double
 
     public CartModel() {
+        // Default constructor required for FirebaseUtil
     }
+
+    // Getters and setters
 
     public String getKey() {
         return key;
@@ -33,11 +37,11 @@ public class CartModel {
         this.image = image;
     }
 
-    public String getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 
@@ -49,17 +53,18 @@ public class CartModel {
         this.quantity = quantity;
     }
 
-    public float getTotalPrice() {
+    public double getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(float totalPrice) {
+    public void setTotalPrice(double totalPrice) {
         this.totalPrice = totalPrice;
     }
 
+    // Other methods, if needed
 
     public Object toMap() {
+        // Convert object to map, if needed
         return null;
     }
 }
-

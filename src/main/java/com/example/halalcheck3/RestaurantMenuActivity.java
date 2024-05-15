@@ -1,69 +1,133 @@
 package com.example.halalcheck3;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.halalcheck3.adapter.MyMenuAdapter;
+import com.example.halalcheck3.listener.ICartLoadListener;
+import com.example.halalcheck3.listener.IMenuLoadListener;
 import com.example.halalcheck3.model.MenuItem;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.RelativeLayout;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.halalcheck3.model.MenuItem;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RestaurantMenuActivity extends AppCompatActivity {
 
-    private EditText itemNameEditText, itemPriceEditText;
-    private Button addItemButton;
+    private RecyclerView recyclerMenu;
+    private RelativeLayout menuLayout;
+
+    private List<MenuItem> menuItems = new ArrayList<>();
+    private MyMenuAdapter menuAdapter;
 
     private DatabaseReference menuRef;
-    private FirebaseAuth mAuth;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_menu);
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser == null) {
-            // Redirect user to login screen or perform necessary authentication
-            // return;
+            // If user is not logged in, you can handle this case accordingly
+            // For example, you can redirect to login screen or display a message
+            Log.e("RestaurantMenuActivity", "User is not logged in");
+            return;
         }
+
         String userId = currentUser.getUid();
+        menuRef = FirebaseDatabase.getInstance().getReference().child("businesses").child(userId).child("Menu");
 
-        menuRef = FirebaseDatabase.getInstance().getReference().child("Menu").child(userId);
+        recyclerMenu = findViewById(R.id.recycler_menu);
+        menuLayout = findViewById(R.id.menuLayout);
 
-        itemNameEditText = findViewById(R.id.itemNameEditText);
-        itemPriceEditText = findViewById(R.id.itemPriceEditText);
-        addItemButton = findViewById(R.id.addItemButton);
-
-        addItemButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addItemToMenu();
-            }
-        });
+        initRecyclerView();
+        loadMenuFromFirebase();
     }
 
-    private void addItemToMenu() {
-        String itemName = itemNameEditText.getText().toString().trim();
-        String itemPrice = itemPriceEditText.getText().toString().trim();
+    private void initRecyclerView() {
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
+        recyclerMenu.setLayoutManager(gridLayoutManager);
+        menuAdapter = new MyMenuAdapter(this, menuItems);
+        recyclerMenu.setAdapter(menuAdapter);
+    }
 
-        if (!itemName.isEmpty() && !itemPrice.isEmpty()) {
-            // Push new item to Firebase database
-            menuRef.push().setValue(new MenuItem(itemName, Double.parseDouble(itemPrice)));
+    private void loadMenuFromFirebase() {
+        menuRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                menuItems.clear();
+                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
+                    String itemName = itemSnapshot.child("itemName").getValue(String.class);
+                    double price = itemSnapshot.child("itemPrice").getValue(Double.class);
 
-            // Clear input fields
-            itemNameEditText.setText("");
-            itemPriceEditText.setText("");
+                 /*   // Convert Long to String
+                    String priceString = String.valueOf(price);
 
-            Toast.makeText(this, "Item added to menu", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Please enter item name and price", Toast.LENGTH_SHORT).show();
-        }
+                    double price = 0.0; // Default value or handle error cases
+                    try {
+                        price = Double.parseDouble(priceString);
+                    } catch (NumberFormatException e) {
+                        Log.e("FirebaseUtil", "Error parsing price: " + e.getMessage());
+                    }*/
+
+                    MenuItem menuItem = new MenuItem();
+                    menuItem.setItemName(itemName);
+                    menuItem.setItemPrice(price);
+
+                    menuItems.add(menuItem);
+                    menuAdapter.notifyDataSetChanged();
+                }
+
+                if (menuItems.isEmpty()) {
+                    Snackbar.make(menuLayout, "No menu items available", Snackbar.LENGTH_LONG).show();
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Snackbar.make(menuLayout, "Database Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
+            }
+        });
     }
 }

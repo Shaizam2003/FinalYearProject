@@ -26,12 +26,12 @@ public class MenuItem implements Serializable {
     }
 
     public String getItemName() {
-        return itemName;
+        return this.itemName;
     }
 
 
-    public String getItemPrice() {
-        return Double.toString(itemPrice);
+    public double getItemPrice() {
+        return this.itemPrice;
     }
 }
 

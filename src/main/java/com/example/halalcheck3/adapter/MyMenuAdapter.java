@@ -39,15 +39,11 @@ public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuView
 
     private Context context;
     private List<MenuItem> menuItemList;
-    private DatabaseReference userCartRef;
-    private ICartLoadListener iCartLoadListener;
     private List<MenuItem> selectedItems; // ArrayList to store selected menu items
 
-    public MyMenuAdapter(Context context, List<MenuItem> menuItemList, DatabaseReference userCartRef, ICartLoadListener iCartLoadListener) {
-        this.context = context.getApplicationContext(); // Use application context to prevent memory leaks
+    public MyMenuAdapter(Context context, List<MenuItem> menuItemList) {
+        this.context = context;
         this.menuItemList = menuItemList;
-        this.userCartRef = userCartRef;
-        this.iCartLoadListener = iCartLoadListener;
         this.selectedItems = new ArrayList<>(); // Initialize selected items ArrayList
     }
 

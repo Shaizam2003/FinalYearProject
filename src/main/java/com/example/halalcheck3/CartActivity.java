@@ -38,6 +38,8 @@ public class CartActivity extends AppCompatActivity {
     private TextView txtTotal;
     private Button btnCheckout;
     private MyCartAdapter adapter;
+    private double totalAmount; // Store total amount
+    String businessUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,25 +50,23 @@ public class CartActivity extends AppCompatActivity {
         mainLayout = findViewById(R.id.cartLayout);
         btnBlack = findViewById(R.id.btnBlack);
         txtTotal = findViewById(R.id.txtTotal);
-        btnCheckout = findViewById(R.id.btnCheckout); // Initialize checkout button
+        btnCheckout = findViewById(R.id.btnCheckout);
 
         init();
 
-        // Retrieve selected items from intent
         List<MenuItem> selectedItems = (List<MenuItem>) getIntent().getSerializableExtra("selectedItems");
 
-        // Convert MenuItem objects to CartModel objects
+        businessUserId = getIntent().getStringExtra("BusinessId");
         List<CartModel> cartModels = convertToCartModels(selectedItems);
-
-        // Display selected items in the cart
         displaySelectedItems(cartModels);
 
-        // Set OnClickListener for the checkout button
         btnCheckout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Navigate to PaymentActivity
                 Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
+                intent.putExtra("totalAmount", totalAmount); // Pass total amount
+                intent.putExtra("BusinessId", businessUserId);
+                intent.putExtra("selectedItems", new ArrayList<>(selectedItems));
                 startActivity(intent);
             }
         });
@@ -77,20 +77,20 @@ public class CartActivity extends AppCompatActivity {
         for (MenuItem item : selectedItems) {
             CartModel cartModel = new CartModel();
             cartModel.setName(item.getItemName());
-            cartModel.setPrice(item.getItemPrice()); // Parse item price to double
+            cartModel.setPrice(item.getItemPrice());
             cartModel.setQuantity(1);
-            cartModel.setTotalPrice(item.getItemPrice()); // Parse item price to double
+            cartModel.setTotalPrice(item.getItemPrice());
             cartModels.add(cartModel);
         }
         return cartModels;
     }
 
     private void displaySelectedItems(List<CartModel> cartModels) {
-        double sum = 0;
+        totalAmount = 0;
         for (CartModel cartModel : cartModels) {
-            sum += cartModel.getTotalPrice();
+            totalAmount += cartModel.getTotalPrice();
         }
-        txtTotal.setText(String.format(Locale.getDefault(), "€%.2f", sum)); // Format sum to display as currency
+        txtTotal.setText(String.format(Locale.getDefault(), "€%.2f", totalAmount)); // Display total amount
         adapter = new MyCartAdapter(this, cartModels);
         recyclerCart.setAdapter(adapter);
     }

@@ -3,6 +3,7 @@ package com.example.halalcheck3;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,12 +32,15 @@ public class UpdateMenuActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
             // Redirect user to login screen or perform necessary authentication
-            // return;
+            // Here you might want to redirect the user to the login screen or show an appropriate message
+            Log.e("UpdateMenuActivity", "User is not logged in");
+            // You could start an activity here to redirect to a login screen
+            return;
         }
         String userId = currentUser.getUid();
 
         // Update the reference to point to the specific business user's menu
-        menuRef = FirebaseDatabase.getInstance().getReference().child("businesses").child("WWnPqsyfTwRNRI4WTVhJ711Ehcr2").child("Menu");
+        menuRef = FirebaseDatabase.getInstance().getReference().child("businesses").child(userId).child("Menu");
 
         itemNameEditText = findViewById(R.id.itemNameEditText);
         itemPriceEditText = findViewById(R.id.itemPriceEditText);

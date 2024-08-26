@@ -74,6 +74,7 @@ public class RestaurantMenuActivity extends AppCompatActivity {
         }
 
         String userId = currentUser.getUid();
+        Log.d("RestaurantMenuActivity", "Current User ID: " + userId);
         menuRef = FirebaseDatabase.getInstance().getReference().child("businesses").child(userId).child("Menu");
 
         recyclerMenu = findViewById(R.id.recycler_menu);

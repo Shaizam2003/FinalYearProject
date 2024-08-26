@@ -1,0 +1,72 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:padding="16dp">
+
+    <TextView
+        android:id="@+id/txtOrderDetailsHeading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Order Details"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp" />
+
+<!-- Order details section -->
+<TextView
+    android:id="@+id/txtOrderDetails"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Order Details"
+    android:textStyle=""
+    android:textSize="16sp" />
+
+    <!-- Heading for Order Status -->
+    <TextView
+        android:id="@+id/txtOrderStatusHeading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Order Status"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp" />
+
+<!-- Statuses section -->
+<TextView
+    android:id="@+id/txtPreparationStatus"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Preparation Status"
+    android:textSize="14sp" />
+
+<TextView
+    android:id="@+id/txtQualityCheckStatus"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Quality Check Status"
+    android:textSize="14sp" />
+
+<TextView
+    android:id="@+id/txtOutForDeliveryStatus"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Out for Delivery Status"
+    android:textSize="14sp" />
+
+<TextView
+    android:id="@+id/txtDeliveredStatus"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Delivered Status"
+    android:textSize="14sp" />
+
+<!-- Button to update status -->
+<Button
+    android:id="@+id/btnUpdateStatus"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Update Status" />
+</LinearLayout>

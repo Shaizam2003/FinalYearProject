@@ -72,8 +72,8 @@ public class BusinessRegister extends AppCompatActivity {
                 if (TextUtils.isEmpty(phone)) {
                     Toast.makeText(BusinessRegister.this, "Please enter your phone number", Toast.LENGTH_SHORT).show();
                     return;
-                } else if (phone.length() != 10) {
-                    Toast.makeText(BusinessRegister.this, "Please enter 10 digits of your phone number", Toast.LENGTH_SHORT).show();
+                } else if (phone.length() < 8) {
+                    Toast.makeText(BusinessRegister.this, "Please enter 8 digits of your phone number", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (TextUtils.isEmpty(address)) {
@@ -82,7 +82,7 @@ public class BusinessRegister extends AppCompatActivity {
                 }
 
                 // Create Business object
-                Business business = new Business(email, phone, address, password);
+                Business business = new Business(address, email, password, phone);
 
                 // Save user information to the Realtime Database after authentication
                 authenticateAndSaveToDatabase(business);

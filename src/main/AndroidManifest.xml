@@ -16,12 +16,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HalalCheck3"
         tools:targetApi="31">
+        <activity
+            android:name=".ViewReviews"
+            android:exported="false" />
+        <activity
+            android:name=".CustomerReview"
+            android:exported="false" />
 
-        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/launcher_icon"/>
-        <meta-data android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/my_primary"/>
-
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/launcher_icon" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/my_primary" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
 
         <activity
             android:name=".ViewOrders"
@@ -75,10 +85,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
-
     </application>
 
 </manifest>

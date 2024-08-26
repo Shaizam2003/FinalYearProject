@@ -3,16 +3,20 @@ package com.example.halalcheck3;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
+import androidx.appcompat.view.menu.MenuAdapter;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.halalcheck3.R;
 import com.example.halalcheck3.adapter.MyMenuAdapter;
 import com.example.halalcheck3.eventbus.MyUpdateCartEvent;
 import com.example.halalcheck3.listener.ICartLoadListener;
 import com.example.halalcheck3.listener.IMenuLoadListener;
+import com.example.halalcheck3.model.Business;
 import com.example.halalcheck3.model.CartModel;
 import com.example.halalcheck3.model.MenuItem;
 import com.google.android.material.snackbar.Snackbar;
@@ -41,7 +45,8 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
 
     List<MenuItem> menuItems = new ArrayList<>();
     MyMenuAdapter menuAdapter;
-
+    String userId;
+    String businessUserId;
     private DatabaseReference cartRef;
 
     @Override
@@ -66,42 +71,59 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_class);
 
-        String userId = firebaseAuth.getCurrentUser().getUid();
-
-        cartRef = FirebaseDatabase.getInstance().getReference().child("Cart").child(userId);
+        // Retrieve the business userId and phoneNumber from the intent
+        Intent intent = getIntent();
+        userId = intent.getStringExtra("UserId");
+        businessUserId = userId;
+        String phoneNumber = intent.getStringExtra("phone_number");
 
         recyclerMenu = findViewById(R.id.recycler_menu);
         menuLayout = findViewById(R.id.menuLayout);
         btnCart = findViewById(R.id.btnCart);
 
-        init();
-        loadMenuFromFirebase();
-        countCartItem();
+        menuLoadListener = this;
+        cartLoadListener = this;
+
+        menuAdapter = new MyMenuAdapter(this, menuItems);
+        recyclerMenu.setAdapter(menuAdapter);
+        recyclerMenu.setLayoutManager(new LinearLayoutManager(this));
+
+        loadMenuFromFirebase(phoneNumber);
+
+        btnCart.setOnClickListener(v -> {
+            // Retrieve selected menu items from the adapter
+            List<MenuItem> selectedItems = menuAdapter.getSelectedItems();
+
+            // Pass the selected items to CartActivity
+            Intent intent1 = new Intent(this, CartActivity.class);
+            intent1.putExtra("BusinessId", businessUserId);
+            intent1.putExtra("selectedItems", new ArrayList<>(selectedItems));
+            startActivity(intent1);
+        });
     }
 
-    //Create another function like below for the Business User Id
-    private void loadMenuFromFirebase() {
-        String userId = firebaseAuth.getCurrentUser().getUid(); //Need to change userId to businessId
-        DatabaseReference menuRef = FirebaseDatabase.getInstance().getReference().child("Menu").child(userId);
+    private void loadMenuFromFirebase(String phoneNumber) {
+        DatabaseReference businessRef = FirebaseDatabase.getInstance().getReference().child("businesses").child(userId).child("Menu");
 
-        menuRef.addValueEventListener(new ValueEventListener() {
+        businessRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 menuItems.clear();
 
                 for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
                     MenuItem menuItem = itemSnapshot.getValue(MenuItem.class);
-
                     if (menuItem != null) {
                         menuItems.add(menuItem);
+                        Log.d("MenuClass", "Item: " + menuItem.getItemName());
                     }
                 }
 
                 if (menuItems.isEmpty()) {
                     Snackbar.make(menuLayout, "No menu items available", Snackbar.LENGTH_LONG).show();
+                } else {
+                    Log.d("MenuClass", "Menu loaded with " + menuItems.size() + " items.");
+                    menuAdapter.notifyDataSetChanged();
                 }
-
-                menuAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -111,30 +133,9 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
         });
     }
 
-    private void init() {
-        menuLoadListener = this;
-        cartLoadListener = this;
-
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
-        recyclerMenu.setLayoutManager(gridLayoutManager);
-
-        menuAdapter = new MyMenuAdapter(this, menuItems, cartRef, cartLoadListener); // Assigning to class variable
-
-        recyclerMenu.setAdapter(menuAdapter);
-
-        btnCart.setOnClickListener(v -> {
-            // Retrieve selected menu items from the adapter
-            List<MenuItem> selectedItems = menuAdapter.getSelectedItems();
-
-            // Pass the selected items to CartActivity
-            Intent intent = new Intent(this, CartActivity.class);
-            intent.putExtra("selectedItems", new ArrayList<>(selectedItems));
-            startActivity(intent);
-        });
-    }
-
     @Override
     public void onMenuLoadSuccess(List<MenuItem> menuItemList) {
+        // Handle successful menu load
     }
 
     @Override

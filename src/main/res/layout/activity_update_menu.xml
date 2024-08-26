@@ -4,10 +4,23 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+
+    <TextView
+        android:id="@+id/txtHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Menu Items to your Restaurant"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textStyle="bold" />
+
     <EditText
         android:id="@+id/itemNameEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/txtHeader"
+        android:layout_marginTop="16dp"
         android:hint="Item Name"
         android:inputType="text" />
 

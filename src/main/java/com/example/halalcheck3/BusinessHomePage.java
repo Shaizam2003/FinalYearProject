@@ -5,11 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class BusinessHomePage extends AppCompatActivity {
 
@@ -21,6 +18,7 @@ public class BusinessHomePage extends AppCompatActivity {
         Button viewMenuButton = findViewById(R.id.viewMenuButton);
         Button updateMenuButton = findViewById(R.id.updateMenuButton);
         Button viewOrdersButton = findViewById(R.id.viewOrdersButton);
+        Button viewReviews = findViewById(R.id.viewReviews);
 
         viewMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,6 +43,15 @@ public class BusinessHomePage extends AppCompatActivity {
             public void onClick(View v) {
                 // Open Orders Activity
                 Intent intent = new Intent(BusinessHomePage.this, ViewOrders.class);
+                startActivity(intent);
+            }
+        });
+
+        viewReviews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open Orders Activity
+                Intent intent = new Intent(BusinessHomePage.this, ViewReviews.class);
                 startActivity(intent);
             }
         });

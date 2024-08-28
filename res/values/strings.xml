@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">HalalCheck3</string>
+    <string name="send_message_button_description">Send Message</string>
+    <string name="back_button_description">Back</string>
+    <string name="toolbar_description">Back</string>
+
+    <string-array name="business_types">
+        <item>Select Option</item>
+        <item>Grocery</item>
+        <item>Restaurant</item>
+    </string-array>
+
+    <string-array name="menu_categories">
+        <item>Pizzas</item>
+        <item>Burgers</item>
+        <item>Drinks</item>
+        <item>Sides</item>
+        <item>Desserts</item>
+        <!-- Add more categories as needed -->
+    </string-array>
+
+    <style name="OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <!-- Add any additional styling for the outlined box here -->
+    </style>
+
+    <string name="google_maps_key">AIzaSyCgEFEG8_Tg371o93947514UNTmKahGwkU</string>
+
+</resources>

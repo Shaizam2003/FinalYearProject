@@ -1,0 +1,41 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:orientation="vertical"
+android:padding="16dp">
+
+    <TextView
+        android:id="@+id/txtOrderDetailsHeading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Order Details"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp" />
+
+<!-- Order details section -->
+<TextView
+    android:id="@+id/txtOrderDetails"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Order Details"
+    android:textStyle=""
+    android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/txtCurrentStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Current Status: "
+        android:textSize="16sp"
+        android:layout_marginTop="8dp"/>
+
+
+<!-- Button to update status -->
+<Button
+    android:id="@+id/btnUpdateStatus"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Update Status" />
+</LinearLayout>

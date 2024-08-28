@@ -8,12 +8,14 @@ public class MenuItem implements Serializable {
 
     private double itemPrice;
 
+
     public MenuItem() {
     }
 
     public MenuItem(String itemName, double itemPrice) {
         this.itemName = itemName;
         this.itemPrice = itemPrice;
+
     }
 
     public void setItemName(String itemName) {
@@ -33,6 +35,7 @@ public class MenuItem implements Serializable {
     public double getItemPrice() {
         return this.itemPrice;
     }
+
 }
 
 

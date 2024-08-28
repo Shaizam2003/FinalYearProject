@@ -1,6 +1,7 @@
 package com.example.halalcheck3.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,74 +19,61 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MyMenuViewHolder> {
+public class MyMenuAdapter extends RecyclerView.Adapter<MyMenuAdapter.MenuItemViewHolder> {
 
     private Context context;
-    private List<MenuItem> menuItemList;
-    private List<MenuItem> selectedItems; // ArrayList to store selected menu items
+    private List<MenuItem> menuItems;
+    private List<MenuItem> selectedItems = new ArrayList<>();
 
-    public MyMenuAdapter(Context context, List<MenuItem> menuItemList) {
+    public MyMenuAdapter(Context context, List<MenuItem> menuItems) {
         this.context = context;
-        this.menuItemList = menuItemList;
-        this.selectedItems = new ArrayList<>(); // Initialize selected items ArrayList
-    }
-
-    public MyMenuAdapter(RestaurantMenuActivity context, List<MenuItem> menuItems) {
-        this.context = context; // Use activity context
-        this.menuItemList = menuItems;
-        this.selectedItems = new ArrayList<>(); // Initialize selected items ArrayList
+        this.menuItems = menuItems;
     }
 
     @NonNull
     @Override
-    public MyMenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate the item layout and create a ViewHolder
-        View itemView = LayoutInflater.from(context).inflate(R.layout.layout_menu_item, parent, false);
-        return new MyMenuViewHolder(itemView);
+    public MenuItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_menu_item, parent, false);
+        return new MenuItemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyMenuViewHolder holder, int position) {
-        // Bind data to ViewHolder
-        MenuItem menuItem = menuItemList.get(position);
-        holder.txtName.setText(menuItem.getItemName());
-        holder.txtPrice.setText("€" + menuItem.getItemPrice());
+    public void onBindViewHolder(@NonNull MenuItemViewHolder holder, int position) {
+        MenuItem item = menuItems.get(position);
+        holder.itemNameTextView.setText(item.getItemName());
+        holder.itemPriceTextView.setText(String.valueOf(item.getItemPrice()));
 
-        // Handle item click event
+        // Handle item selection
         holder.itemView.setOnClickListener(v -> {
-            addToCart(menuItem); // Add selected item to cart
+            if (selectedItems.contains(item)) {
+                selectedItems.remove(item);
+            } else {
+                selectedItems.add(item);
+            }
+            notifyItemChanged(position); // Refresh the item view
         });
-    }
 
-    private void addToCart(MenuItem menuItem) {
-        // Add the selected item to the selectedItems ArrayList
-        selectedItems.add(menuItem);
-
-        // Optionally, you can display a message or perform any other action here
-        Toast.makeText(context, menuItem.getItemName() + " added to cart", Toast.LENGTH_SHORT).show();
-    }
-
-    public List<MenuItem> getSelectedItems() {
-        // Getter method to retrieve selected items
-        return selectedItems;
+        // Update item view based on selection
+        holder.itemView.setBackgroundColor(selectedItems.contains(item) ? Color.LTGRAY : Color.WHITE);
     }
 
     @Override
     public int getItemCount() {
-        return menuItemList != null ? menuItemList.size() : 0;
+        return menuItems.size();
     }
 
-    public class MyMenuViewHolder extends RecyclerView.ViewHolder {
+    public List<MenuItem> getSelectedItems() {
+        return new ArrayList<>(selectedItems); // Return a copy to prevent external modifications
+    }
 
-        // ViewHolder class to hold item views
-        TextView txtName;
-        TextView txtPrice;
+    public static class MenuItemViewHolder extends RecyclerView.ViewHolder {
+        TextView itemNameTextView;
+        TextView itemPriceTextView;
 
-        public MyMenuViewHolder(@NonNull View itemView) {
+        public MenuItemViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Initialize views
-            txtName = itemView.findViewById(R.id.txtName);
-            txtPrice = itemView.findViewById(R.id.txtPrice);
+            itemNameTextView = itemView.findViewById(R.id.txtName);
+            itemPriceTextView = itemView.findViewById(R.id.txtPrice);
         }
     }
 }

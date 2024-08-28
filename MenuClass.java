@@ -12,12 +12,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.halalcheck3.R;
+import com.example.halalcheck3.adapter.MenuCategoryAdapter;
 import com.example.halalcheck3.adapter.MyMenuAdapter;
 import com.example.halalcheck3.eventbus.MyUpdateCartEvent;
 import com.example.halalcheck3.listener.ICartLoadListener;
 import com.example.halalcheck3.listener.IMenuLoadListener;
 import com.example.halalcheck3.model.Business;
 import com.example.halalcheck3.model.CartModel;
+import com.example.halalcheck3.model.MenuCategory;
 import com.example.halalcheck3.model.MenuItem;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +33,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MenuClass extends AppCompatActivity implements IMenuLoadListener, ICartLoadListener {
 
@@ -43,8 +46,6 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
 
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
-    List<MenuItem> menuItems = new ArrayList<>();
-    MyMenuAdapter menuAdapter;
     String userId;
     String businessUserId;
     private DatabaseReference cartRef;
@@ -84,45 +85,78 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
         menuLoadListener = this;
         cartLoadListener = this;
 
-        menuAdapter = new MyMenuAdapter(this, menuItems);
-        recyclerMenu.setAdapter(menuAdapter);
         recyclerMenu.setLayoutManager(new LinearLayoutManager(this));
 
-        loadMenuFromFirebase(phoneNumber);
+        loadMenuFromFirebase();
 
         btnCart.setOnClickListener(v -> {
             // Retrieve selected menu items from the adapter
-            List<MenuItem> selectedItems = menuAdapter.getSelectedItems();
-
-            // Pass the selected items to CartActivity
-            Intent intent1 = new Intent(this, CartActivity.class);
-            intent1.putExtra("BusinessId", businessUserId);
-            intent1.putExtra("selectedItems", new ArrayList<>(selectedItems));
-            startActivity(intent1);
+            MenuCategoryAdapter adapter = (MenuCategoryAdapter) recyclerMenu.getAdapter();
+            if (adapter != null) {
+                List<MenuItem> selectedItems = adapter.getSelectedItems();
+                if (selectedItems != null && !selectedItems.isEmpty()) {
+                    // Pass the selected items to CartActivity
+                    Intent intent1 = new Intent(MenuClass.this, CartActivity.class);
+                    intent1.putExtra("BusinessId", businessUserId);
+                    intent1.putExtra("selectedItems", new ArrayList<>(selectedItems));
+                    startActivity(intent1);
+                } else {
+                    Snackbar.make(btnCart, "No items selected", Snackbar.LENGTH_LONG).show();
+                }
+            } else {
+                Snackbar.make(btnCart, "No items available", Snackbar.LENGTH_LONG).show();
+            }
         });
     }
 
-    private void loadMenuFromFirebase(String phoneNumber) {
-        DatabaseReference businessRef = FirebaseDatabase.getInstance().getReference().child("businesses").child(userId).child("Menu");
+    private void loadMenuFromFirebase() {
+        DatabaseReference businessRef = FirebaseDatabase.getInstance().getReference()
+                .child("businesses").child(businessUserId).child("Menu");
 
         businessRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                menuItems.clear();
+                List<MenuCategory> menuCategories = new ArrayList<>();
+                for (DataSnapshot categorySnapshot : dataSnapshot.getChildren()) {
+                    String categoryName = categorySnapshot.getKey();
+                    List<MenuItem> items = new ArrayList<>();
 
-                for (DataSnapshot itemSnapshot : dataSnapshot.getChildren()) {
-                    MenuItem menuItem = itemSnapshot.getValue(MenuItem.class);
-                    if (menuItem != null) {
-                        menuItems.add(menuItem);
-                        Log.d("MenuClass", "Item: " + menuItem.getItemName());
+                    for (DataSnapshot itemSnapshot : categorySnapshot.getChildren()) {
+                        try {
+                            Map<String, Object> itemData = (Map<String, Object>) itemSnapshot.getValue();
+                            if (itemData != null) {
+                                String itemName = (String) itemData.get("itemName");
+                                Object itemPriceObj = itemData.get("itemPrice");
+
+                                double itemPrice;
+                                if (itemPriceObj instanceof Long) {
+                                    itemPrice = ((Long) itemPriceObj).doubleValue(); // Convert Long to double
+                                } else if (itemPriceObj instanceof Integer) {
+                                    itemPrice = ((Integer) itemPriceObj).doubleValue(); // Convert Integer to double
+                                } else {
+                                    itemPrice = 0.0; // Default value
+                                    Log.e("MenuClass", "Unexpected itemPrice type: " + itemPriceObj.getClass().getName());
+                                }
+
+                                MenuItem menuItem = new MenuItem(itemName, itemPrice);
+                                items.add(menuItem);
+                            } else {
+                                Log.e("MenuClass", "Error: Item data is null");
+                            }
+                        } catch (Exception e) {
+                            Log.e("MenuClass", "Error parsing MenuItem: " + e.getMessage());
+                        }
+                    }
+
+                    if (!items.isEmpty()) {
+                        menuCategories.add(new MenuCategory(categoryName, items));
                     }
                 }
 
-                if (menuItems.isEmpty()) {
+                if (menuCategories.isEmpty()) {
                     Snackbar.make(menuLayout, "No menu items available", Snackbar.LENGTH_LONG).show();
                 } else {
-                    Log.d("MenuClass", "Menu loaded with " + menuItems.size() + " items.");
-                    menuAdapter.notifyDataSetChanged();
+                    setupRecyclerView(menuCategories);
                 }
             }
 
@@ -131,6 +165,12 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
                 Snackbar.make(menuLayout, "Database Error: " + error.getMessage(), Snackbar.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void setupRecyclerView(List<MenuCategory> menuCategories) {
+        MenuCategoryAdapter menuCategoryAdapter = new MenuCategoryAdapter(this, menuCategories);
+        recyclerMenu.setAdapter(menuCategoryAdapter);
+        recyclerMenu.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override

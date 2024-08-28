@@ -4,31 +4,30 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import androidx.annotation.NonNull;
+
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.halalcheck3.adapter.MyCartAdapter;
-import com.example.halalcheck3.eventbus.MyUpdateCartEvent;
-import com.example.halalcheck3.listener.ICartLoadListener;
+
 import com.example.halalcheck3.model.CartModel;
 import com.example.halalcheck3.model.MenuItem;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+
+
+
+import androidx.annotation.Nullable;
+
 
 public class CartActivity extends AppCompatActivity {
 
@@ -39,10 +38,10 @@ public class CartActivity extends AppCompatActivity {
     private Button btnCheckout;
     private MyCartAdapter adapter;
     private double totalAmount; // Store total amount
-    String businessUserId;
+    private String businessUserId;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
@@ -52,24 +51,35 @@ public class CartActivity extends AppCompatActivity {
         txtTotal = findViewById(R.id.txtTotal);
         btnCheckout = findViewById(R.id.btnCheckout);
 
+        // Initialize RecyclerView and other UI elements
         init();
 
+        // Get selected items and business ID from intent
         List<MenuItem> selectedItems = (List<MenuItem>) getIntent().getSerializableExtra("selectedItems");
-
         businessUserId = getIntent().getStringExtra("BusinessId");
-        List<CartModel> cartModels = convertToCartModels(selectedItems);
-        displaySelectedItems(cartModels);
 
-        btnCheckout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
-                intent.putExtra("totalAmount", totalAmount); // Pass total amount
-                intent.putExtra("BusinessId", businessUserId);
-                intent.putExtra("selectedItems", new ArrayList<>(selectedItems));
-                startActivity(intent);
-            }
+        if (selectedItems != null && !selectedItems.isEmpty()) {
+            // Convert selected items to CartModel and display them
+            List<CartModel> cartModels = convertToCartModels(selectedItems);
+            displaySelectedItems(cartModels);
+        } else {
+            Snackbar.make(mainLayout, "No items selected", Snackbar.LENGTH_LONG).show();
+        }
+
+        btnCheckout.setOnClickListener(v -> {
+            Intent intent = new Intent(CartActivity.this, PaymentActivity.class);
+            intent.putExtra("totalAmount", totalAmount); // Pass total amount
+            intent.putExtra("BusinessId", businessUserId);
+            intent.putExtra("selectedItems", new ArrayList<>(selectedItems));
+            startActivity(intent);
         });
+    }
+
+    private void init() {
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerCart.setLayoutManager(layoutManager);
+        recyclerCart.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
+        btnBlack.setOnClickListener(v -> finish());
     }
 
     private List<CartModel> convertToCartModels(List<MenuItem> selectedItems) {
@@ -91,14 +101,8 @@ public class CartActivity extends AppCompatActivity {
             totalAmount += cartModel.getTotalPrice();
         }
         txtTotal.setText(String.format(Locale.getDefault(), "€%.2f", totalAmount)); // Display total amount
+
         adapter = new MyCartAdapter(this, cartModels);
         recyclerCart.setAdapter(adapter);
-    }
-
-    private void init() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerCart.setLayoutManager(layoutManager);
-        recyclerCart.addItemDecoration(new DividerItemDecoration(this, layoutManager.getOrientation()));
-        btnBlack.setOnClickListener(v -> finish());
     }
 }

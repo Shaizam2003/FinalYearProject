@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Order Details Heading -->
+    <TextView
+        android:id="@+id/txtOrderDetailsHeading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Order Details"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Container for Checkbox and Order Details -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Checkbox for Selection -->
+        <CheckBox
+            android:id="@+id/checkBoxSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Order Details TextView -->
+        <TextView
+            android:id="@+id/txtOrderDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order Details"
+            android:textStyle=""
+            android:textSize="16sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp" /> <!-- Use either marginStart or marginLeft based on the minimum SDK version -->
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/textViewHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="We have received your order. You can track the status of your order below!"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Customer Email -->
+        <TextView
+            android:id="@+id/textViewCustomerEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Customer Email:"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_below="@id/textViewHeading"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/textViewOrderReferenceNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order Reference Number: "
+            android:textSize="16sp"
+            android:layout_below="@id/textViewCustomerEmail"
+            android:layout_marginTop="8dp"/>
+
+
+
+        <!-- Order Items -->
+        <TextView
+            android:id="@+id/textViewOrderItems"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Order Items:"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:layout_below="@id/textViewOrderReferenceNumber"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/textViewCurrentStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Current Status: "
+            android:textSize="16sp"
+            android:layout_below="@id/textViewOrderItems"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Review Restaurant Button -->
+        <Button
+            android:id="@+id/buttonReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Review Restaurant"
+            android:layout_below="@id/textViewCurrentStatus"
+            android:layout_marginTop="16dp"
+            android:padding="12dp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/purple"/>
+
+    </RelativeLayout>
+</ScrollView>

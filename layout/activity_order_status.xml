@@ -29,6 +29,7 @@
             android:layout_below="@id/textViewHeading"
             android:layout_marginBottom="8dp"/>
 
+        <!-- Order Reference Number -->
         <TextView
             android:id="@+id/textViewOrderReferenceNumber"
             android:layout_width="wrap_content"
@@ -37,8 +38,6 @@
             android:textSize="16sp"
             android:layout_below="@id/textViewCustomerEmail"
             android:layout_marginTop="8dp"/>
-
-
 
         <!-- Order Items -->
         <TextView
@@ -51,6 +50,7 @@
             android:layout_below="@id/textViewOrderReferenceNumber"
             android:layout_marginBottom="16dp"/>
 
+        <!-- Current Status -->
         <TextView
             android:id="@+id/textViewCurrentStatus"
             android:layout_width="wrap_content"
@@ -60,17 +60,21 @@
             android:layout_below="@id/textViewOrderItems"
             android:layout_marginTop="8dp"/>
 
-        <!-- Review Restaurant Button -->
-        <Button
-            android:id="@+id/buttonReview"
+        <!-- Message to Customer -->
+        <TextView
+            android:id="@+id/textViewCustomerMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Review Restaurant"
+            android:text="When your order is Out for Delivery, you can communicate with the driver in MY ORDERS and Review Our Restaurant!"
+            android:textSize="20sp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
             android:layout_below="@id/textViewCurrentStatus"
             android:layout_marginTop="16dp"
-            android:padding="12dp"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/purple"/>
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"/>
+
+
 
     </RelativeLayout>
 </ScrollView>

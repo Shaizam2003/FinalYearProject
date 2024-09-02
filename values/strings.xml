@@ -10,6 +10,15 @@
         <item>Restaurant</item>
     </string-array>
 
+    <string-array name="menu_categories">
+        <item>Pizzas</item>
+        <item>Burgers</item>
+        <item>Drinks</item>
+        <item>Sides</item>
+        <item>Desserts</item>
+        <!-- Add more categories as needed -->
+    </string-array>
+
     <style name="OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <!-- Add any additional styling for the outlined box here -->
     </style>

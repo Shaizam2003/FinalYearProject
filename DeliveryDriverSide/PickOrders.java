@@ -60,21 +60,27 @@ public class PickOrders extends AppCompatActivity {
     }
 
     private void loadOrders() {
-        ordersRef.orderByChild("orderDetails/driverId").equalTo("")
+        // Query to fetch orders where currentStatus is "Ready for Delivery" and driverId is empty
+        ordersRef.orderByChild("orderStatus/currentStatus").equalTo("Ready for Delivery")
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         orderList.clear();
                         for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
-                            Order order = new Order();
                             DataSnapshot orderDetailsSnapshot = orderSnapshot.child("orderDetails");
                             if (orderDetailsSnapshot.exists()) {
-                                order.setOrderId(orderSnapshot.getKey());  // Set the order ID
-                                order.setBusinessId(orderDetailsSnapshot.child("businessId").getValue(String.class));
-                                order.setCustomerId(orderDetailsSnapshot.child("customerId").getValue(String.class));
-                                order.setTimestamp(orderDetailsSnapshot.child("timestamp").getValue(Long.class));
-                                order.setOrderReference(orderDetailsSnapshot.child("orderReference").getValue(String.class)); // Set the order reference
-                                orderList.add(order);  // Add order to the list
+                                String driverId = orderDetailsSnapshot.child("driverId").getValue(String.class);
+
+                                // Check if driverId is empty before adding to the list
+                                if (driverId == null || driverId.isEmpty()) {
+                                    Order order = new Order();
+                                    order.setOrderId(orderSnapshot.getKey());  // Set the order ID
+                                    order.setBusinessId(orderDetailsSnapshot.child("businessId").getValue(String.class));
+                                    order.setCustomerId(orderDetailsSnapshot.child("customerId").getValue(String.class));
+                                    order.setTimestamp(orderDetailsSnapshot.child("timestamp").getValue(Long.class));
+                                    order.setOrderReference(orderDetailsSnapshot.child("orderReference").getValue(String.class)); // Set the order reference
+                                    orderList.add(order);  // Add order to the list
+                                }
                             }
                         }
                         pickOrderAdapter.notifyDataSetChanged();
@@ -86,6 +92,8 @@ public class PickOrders extends AppCompatActivity {
                     }
                 });
     }
+
+
 
     private void finishSelection() {
         boolean ordersAssigned = false;

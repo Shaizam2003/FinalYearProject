@@ -2,14 +2,19 @@ package com.example.halalcheck3.BusinessSide;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.halalcheck3.R;
 import com.example.halalcheck3.adapter.OrderAdapter;
+import com.example.halalcheck3.listener.OrderStatusListener;
 import com.example.halalcheck3.model.Order;
 import com.example.halalcheck3.model.OrderItem;
 import com.example.halalcheck3.model.OrderStatus;
@@ -25,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViewOrders extends AppCompatActivity {
+
+        private static final int REQUEST_CODE_NOTIFICATION_PERMISSION = 1;
 
         private RecyclerView recyclerOrders;
         private OrderAdapter orderAdapter;
@@ -55,6 +62,34 @@ public class ViewOrders extends AppCompatActivity {
                 recyclerOrders.setAdapter(orderAdapter);
 
                 loadOrdersForBusiness(businessId);
+
+                // Check for notification permission and initialize listener
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE_NOTIFICATION_PERMISSION);
+                        } else {
+                                initializeOrderStatusListener();
+                        }
+                } else {
+                        initializeOrderStatusListener();
+                }
+        }
+
+        @Override
+        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                if (requestCode == REQUEST_CODE_NOTIFICATION_PERMISSION) {
+                        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                                initializeOrderStatusListener();
+                        } else {
+                                // Handle the case where the user denied the permission
+                                Log.e("ViewOrders", "Notification permission denied");
+                        }
+                }
+        }
+
+        private void initializeOrderStatusListener() {
+                new OrderStatusListener(this);
         }
 
         private void loadOrdersForBusiness(String businessId) {
@@ -79,7 +114,6 @@ public class ViewOrders extends AppCompatActivity {
                                                                 order.setCustomerId(orderDetailsSnapshot.child("customerId").getValue(String.class));
                                                                 order.setTimestamp(orderDetailsSnapshot.child("timestamp").getValue(Long.class));
                                                                 order.setOrderReference(orderDetailsSnapshot.child("orderReference").getValue(String.class)); // Set the order reference
-
                                                         }
 
                                                         DataSnapshot orderItemsSnapshot = orderSnapshot.child("orderItems");
@@ -110,6 +144,4 @@ public class ViewOrders extends AppCompatActivity {
                                 }
                         });
         }
-
-
 }

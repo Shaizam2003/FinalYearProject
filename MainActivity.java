@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -97,20 +98,25 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                // Retrieve user information from the Realtime Database
-                                  //  retrieveUserInfoFromDatabase(email);
+                                    // Retrieve the current user ID
+                                    FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                                    String userId = currentUser.getUid();
 
+                                    // Show a success message
                                     Toast.makeText(MainActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(MainActivity.this, CurrentLocationActivity.class);
-                                    intent.putExtra("USER_EMAIL", email);
+
+                                    // Navigate to CustomerHomeActivity, passing the user ID
+                                    Intent intent = new Intent(MainActivity.this, HomePage.class);
+                                    intent.putExtra("USER_ID", userId); // Pass user ID to the Home Activity
                                     startActivity(intent);
-                                    finish();
+                                    finish(); // Close the MainActivity
                                 } else {
+                                    // Show an error message
                                     Toast.makeText(MainActivity.this, "Authentication Failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
-
                         });
+
             }
         });
     }

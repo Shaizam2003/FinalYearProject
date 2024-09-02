@@ -1,6 +1,5 @@
 package com.example.halalcheck3.adapter;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
@@ -9,32 +8,41 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.halalcheck3.R;
+import com.example.halalcheck3.listener.OrderStatusListener;
 import com.example.halalcheck3.model.Order;
 import com.example.halalcheck3.model.OrderItem;
-import com.example.halalcheck3.model.OrderStatus;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.Call;
+import okhttp3.Callback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.io.IOException;
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
-
     private List<Order> orderList;
     private Context context;
 
     public OrderAdapter(List<Order> orderList, Context context) {
         this.orderList = orderList;
         this.context = context;
+        // Initialize OrderStatusListener to listen for changes
+        new OrderStatusListener(context);
     }
 
     @NonNull
@@ -60,25 +68,24 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         builder.setTitle("Update Order Status");
 
         // Status options
-        String[] statuses = {"Preparation", "Quality Check", "Out for Delivery"};
+      //  String[] statuses = {"Preparation", "Quality Check", "Out for Delivery"};
+
+        // Status options
+        String[] statuses = {"Ready for Delivery"};
 
         builder.setItems(statuses, (dialog, which) -> {
             String selectedStatus = statuses[which];
 
-            // Reference to the order status node in Firebase
             DatabaseReference statusRef = FirebaseDatabase.getInstance().getReference()
                     .child("orders")
                     .child(order.getOrderId())
                     .child("orderStatus");
 
-            // Update only the currentStatus in Firebase
             statusRef.child("currentStatus").setValue(selectedStatus).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    // Update local data
                     order.getOrderStatus().setCurrentStatus(selectedStatus);
-                    notifyItemChanged(position);  // Refresh RecyclerView item
+                    notifyItemChanged(position);
                 } else {
-                    // Handle possible errors silently
                     Log.e("OrderAdapter", "Failed to update status");
                 }
             });
@@ -100,10 +107,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
         }
 
         public void bind(Order order) {
-            // Reference to the user node in Firebase
             DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("users");
-
-            // Fetch and display the customer email using customer ID
             usersRef.child(order.getCustomerId()).child("email").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -112,12 +116,10 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
                     orderDetails.append("Order Reference: ").append(order.getOrderReference()).append("\n");
 
-
                     if (customerEmail != null) {
                         orderDetails.append("Customer Email: ").append(customerEmail).append("\n");
                     }
 
-                    // Display total amount and items
                     orderDetails.append("Total Amount: €").append(order.getTotalAmount()).append("\n");
                     orderDetails.append("Items:\n");
 
@@ -128,10 +130,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                                 .append(item.getTotalPrice()).append("\n");
                     }
 
-                    // Set the order details text
                     txtOrderDetails.setText(orderDetails.toString());
-
-                    // Display the current status in a single line
                     txtCurrentStatus.setText("Current Status: " + order.getOrderStatus().getCurrentStatus());
                 }
 
@@ -141,7 +140,6 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
                 }
             });
 
-            // Set OnClickListener for the update status button
             btnUpdateStatus.setOnClickListener(v -> {
                 int adapterPosition = getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION) {

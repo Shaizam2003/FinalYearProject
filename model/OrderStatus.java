@@ -1,7 +1,7 @@
 package com.example.halalcheck3.model;
 
 public class OrderStatus {
-    private String currentStatus = "Pending";
+    private String currentStatus = "Preparation";
 
     // Default constructor required for Firebase
     public OrderStatus() {}

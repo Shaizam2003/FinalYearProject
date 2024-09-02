@@ -2,6 +2,7 @@ package com.example.halalcheck3.adapter;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.halalcheck3.R;
+import com.example.halalcheck3.DeliveryDriverSide.SendMessageToCustomer;
+import com.example.halalcheck3.DeliveryDriverSide.ViewMessagesFromCustomer;
 import com.example.halalcheck3.model.Order;
 import com.example.halalcheck3.model.OrderItem;
 import com.example.halalcheck3.model.OrderStatus;
@@ -40,7 +43,7 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
     @NonNull
     @Override
     public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_order_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_assigned_order_item, parent, false);
         return new OrderViewHolder(view);
     }
 
@@ -59,7 +62,9 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Update Order Status");
 
-        String[] statuses = {"Delivered"};
+        String[] statuses = {"Out for Delivery", "Delivered"};
+
+        //String[] statuses = {"Delivered"};
 
         builder.setItems(statuses, (dialog, which) -> {
             String status = statuses[which];
@@ -109,12 +114,18 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
         TextView txtOrderDetails;
         TextView txtCurrentStatus;
         Button btnUpdateStatus;
+        Button btnSendMessages;
+        Button btnViewMessages;
+
+
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
             txtOrderDetails = itemView.findViewById(R.id.txtOrderDetails);
             txtCurrentStatus = itemView.findViewById(R.id.txtCurrentStatus);
             btnUpdateStatus = itemView.findViewById(R.id.btnUpdateStatus);
+            btnSendMessages = itemView.findViewById(R.id.btnSendMessages);
+            btnViewMessages = itemView.findViewById(R.id.btnViewMessages);
         }
 
         public void bind(Order order) {
@@ -216,6 +227,25 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
                     showUpdateStatusDialog(order, adapterPosition);
                 }
             });
+            // Set OnClickListener for the send messages button
+            btnSendMessages.setOnClickListener(v -> {
+                Intent intent = new Intent(context, SendMessageToCustomer.class);
+                intent.putExtra("orderId", order.getOrderId());
+                intent.putExtra("customerId", order.getCustomerId());
+                intent.putExtra("driverId", driverId);
+                context.startActivity(intent);
+            });
+
+            // Set OnClickListener for the view messages button
+            btnViewMessages.setOnClickListener(v -> {
+                Intent intent = new Intent(context, ViewMessagesFromCustomer.class);
+                intent.putExtra("orderId", order.getOrderId());
+                intent.putExtra("customerId", order.getCustomerId());
+                intent.putExtra("driverId", driverId);
+                context.startActivity(intent);
+            });
+
+
         }
     }
 }

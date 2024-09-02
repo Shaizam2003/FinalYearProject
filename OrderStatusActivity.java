@@ -24,6 +24,7 @@ public class OrderStatusActivity extends AppCompatActivity {
     private DatabaseReference orderRef;
     private FirebaseAuth mAuth;
     private String businessId;
+    private String driverId;  // Added to store the driver ID
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,10 +33,9 @@ public class OrderStatusActivity extends AppCompatActivity {
 
         // Get references to the TextViews
         TextView textViewCustomerEmail = findViewById(R.id.textViewCustomerEmail);
-       // TextView textViewTotalAmount = findViewById(R.id.textViewTotalAmount);
         TextView textViewOrderItems = findViewById(R.id.textViewOrderItems);
-        TextView textViewCurrentStatus = findViewById(R.id.textViewCurrentStatus); // Added
-        TextView textViewOrderReferenceNumber = findViewById(R.id.textViewOrderReferenceNumber); // Added
+        TextView textViewCurrentStatus = findViewById(R.id.textViewCurrentStatus);
+        TextView textViewOrderReferenceNumber = findViewById(R.id.textViewOrderReferenceNumber);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -70,11 +70,7 @@ public class OrderStatusActivity extends AppCompatActivity {
 
                     // Retrieve and display the order reference number
                     String orderReferenceNumber = orderDetailsSnapshot.child("orderReference").getValue(String.class);
-
                     textViewOrderReferenceNumber.setText("Order Reference Number: " + (orderReferenceNumber != null ? orderReferenceNumber : "Not Available"));
-
-                  //  textViewTotalAmount.setText("Total Amount: €" + (totalAmount != null ? totalAmount : "Not Available"));
-
 
                     // Get and display the order items
                     StringBuilder orderItemsText = new StringBuilder();
@@ -97,8 +93,11 @@ public class OrderStatusActivity extends AppCompatActivity {
                     // Extract business ID from the orderDetails node
                     businessId = orderDetailsSnapshot.child("businessId").getValue(String.class);
 
+                    // Extract driver ID from the orderDetails node (Assuming driverId is stored here)
+                    driverId = orderDetailsSnapshot.child("driverId").getValue(String.class);
+
                     // Set up the button to start CustomerReviewActivity
-                    Button buttonReview = findViewById(R.id.buttonReview);
+               /*     Button buttonReview = findViewById(R.id.buttonReview);
                     buttonReview.setOnClickListener(v -> {
                         if (businessId != null) {
                             Intent intent = new Intent(OrderStatusActivity.this, CustomerReview.class);
@@ -107,7 +106,35 @@ public class OrderStatusActivity extends AppCompatActivity {
                         } else {
                             Toast.makeText(OrderStatusActivity.this, "Business ID not found.", Toast.LENGTH_SHORT).show();
                         }
+                    });*/
+
+                    // Set up the button to start Message Activity
+                 /*   Button buttonChatDriver = findViewById(R.id.buttonChatDriver);
+                    buttonChatDriver.setOnClickListener(v -> {
+                        if (driverId != null && "outfordelivery".equalsIgnoreCase(currentStatus)) {
+                            Intent intent = new Intent(OrderStatusActivity.this, SendMessageActivity.class);
+                            intent.putExtra("ORDER_ID", orderId);
+                            intent.putExtra("DRIVER_ID", driverId);
+                            intent.putExtra("CUSTOMER_ID", currentUser.getUid());  // Pass customer ID
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(OrderStatusActivity.this, "Driver not assigned or order not out for delivery.", Toast.LENGTH_SHORT).show();
+                        }
                     });
+
+                    // Set up the button to start ViewMessagesActivity
+                    Button viewMessagesButton = findViewById(R.id.viewMessages);
+                    viewMessagesButton.setOnClickListener(v -> {
+                        if (driverId != null && "outfordelivery".equalsIgnoreCase(currentStatus)) {
+                            Intent intent = new Intent(OrderStatusActivity.this, ViewMessagesFromDriver.class);
+                            intent.putExtra("ORDER_ID", orderId);
+                            intent.putExtra("DRIVER_ID", driverId);
+                            intent.putExtra("CUSTOMER_ID", currentUser.getUid());  // Pass customer ID
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(OrderStatusActivity.this, "Driver not assigned or order not out for delivery.", Toast.LENGTH_SHORT).show();
+                        }
+                    });*/
                 }
             }
 

@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -16,11 +17,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HalalCheck3"
         tools:targetApi="31">
-
+        <activity
+            android:name=".DeliveryDriverSide.NewMessagesFromCustomer"
+            android:exported="false" />
+        <activity
+            android:name=".NewMessagesFromDriver"
+            android:exported="false" />
+        <activity
+            android:name=".MyOrders"
+            android:exported="false" />
+        <activity
+            android:name=".DeliveryDriverSide.ViewMessagesFromCustomer"
+            android:exported="false" />
+        <activity
+            android:name=".DeliveryDriverSide.SendMessageToCustomer"
+            android:exported="false" />
+        <activity
+            android:name=".ViewMessagesFromDriver"
+            android:exported="false" />
+        <activity
+            android:name=".SendMessageToDriver"
+            android:exported="false" />
         <activity
             android:name=".DeliveryDriverSide.PickOrders"
             android:exported="false" />
-
         <activity
             android:name=".BusinessSide.ViewOrdersDelivered"
             android:exported="false" />

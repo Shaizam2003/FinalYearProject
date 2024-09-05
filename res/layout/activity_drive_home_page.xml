@@ -1,39 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/menubackground"
-    tools:context=".DeliveryDriverSide.DriverHomePage">
+    android:padding="16dp"
+    android:background="@drawable/menubackground">
 
+    <!-- Title TextView -->
     <TextView
         android:id="@+id/welcomeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Welcome to Driver Dashboard"
+        android:textSize="24sp"
+        android:textStyle="bold"
         android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="Welcome Drivers"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:layout_marginBottom="32dp"
+        android:layout_alignParentTop="true"/>
 
-    <Button
-        android:id="@+id/pickOrders"
-        android:layout_width="wrap_content"
+    <!-- Button Container -->
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/welcomeTextView"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="Pick Orders" />
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
 
-    <Button
-        android:id="@+id/viewAssignedOrders"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/pickOrders"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:text="View Assigned Orders" />
+        <!-- Pick Orders Button -->
+        <Button
+            android:id="@+id/pickOrders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pick Orders"
+            android:textSize="18sp"
+            android:background="@color/purple"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
 
+        <!-- View Assigned Orders Button -->
+        <Button
+            android:id="@+id/viewAssignedOrders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Assigned Orders"
+            android:textSize="18sp"
+            android:background="@color/purple"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
 
+        <!-- New Messages Button -->
+        <Button
+            android:id="@+id/viewNewMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Messages From Customers"
+            android:textSize="18sp"
+            android:background="@color/purple"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- New Messages Button -->
+        <Button
+            android:id="@+id/viewDeliveredOrders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Delivered Orders"
+            android:textSize="18sp"
+            android:background="@color/purple"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
+    </LinearLayout>
 
 </RelativeLayout>

@@ -1,17 +1,75 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/menubackground"
-    tools:context=".HomePage">
+    android:padding="16dp"
+    android:background="@drawable/menubackground">
 
+    <!-- Title TextView -->
     <TextView
-        android:id="@+id/welcomeTextView"
+        android:id="@+id/homeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome, User!"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:text="Welcome to Halal Check"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:layout_alignParentTop="true"/>
+
+    <!-- Button Container -->
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+
+        <!-- Make an Order Button -->
+        <Button
+            android:id="@+id/buttonMakeOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Make an Order"
+            android:textSize="18sp"
+            android:background="@color/purple"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- My Orders Button -->
+        <Button
+            android:id="@+id/buttonMyOrders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Current Orders"
+            android:textSize="18sp"
+            android:background="@color/purple"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- New Messages Button -->
+        <Button
+            android:id="@+id/buttonNewMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Messages"
+            android:textSize="18sp"
+            android:background="@color/purple"
+            android:textColor="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- View Past Orders Button -->
+        <Button
+            android:id="@+id/buttonPastOrders"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Past Orders"
+            android:textSize="18sp"
+            android:background="@color/purple"
+            android:textColor="@android:color/white"
+            android:padding="16dp" />
+    </LinearLayout>
 
 </RelativeLayout>

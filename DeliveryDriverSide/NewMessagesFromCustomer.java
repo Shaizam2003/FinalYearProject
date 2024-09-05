@@ -7,11 +7,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.halalcheck3.R;
 import com.example.halalcheck3.adapter.NewMessagesFromCustomerAdapter;
 import com.example.halalcheck3.model.ChatMessage;
 import com.example.halalcheck3.model.CustomerInfo;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,6 +44,8 @@ public class NewMessagesFromCustomer extends AppCompatActivity {
         recycler_new_messages = findViewById(R.id.recycler_new_messages);
         recycler_new_messages.setLayoutManager(new LinearLayoutManager(this));
 
+        Button btnBack = findViewById(R.id.btnBack);
+
         // Initialize Firebase references
         ordersRef = FirebaseDatabase.getInstance().getReference("orders");
         usersRef = FirebaseDatabase.getInstance().getReference("users");
@@ -54,6 +60,14 @@ public class NewMessagesFromCustomer extends AppCompatActivity {
 
         String driverId = currentUser.getUid();
         fetchOrdersForDriver(driverId);
+
+        // Set up back button to mark messages as read and go back
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                markMessagesAsRead(driverId);
+            }
+        });
     }
 
     private void fetchOrdersForDriver(String driverId) {
@@ -127,5 +141,54 @@ public class NewMessagesFromCustomer extends AppCompatActivity {
                 Log.e("NewMessagesFromCustomer", "Database error: " + databaseError.getMessage());
             }
         });
+    }
+
+    private void markMessagesAsRead(String driverId) {
+        ordersRef.orderByChild("orderDetails/driverId").equalTo(driverId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
+                            String orderId = orderSnapshot.getKey();  // Get the order ID
+
+                            // Reference to the messages node under the specific order ID
+                            DatabaseReference messagesRef = ordersRef.child(orderId).child("messages");
+
+                            // Update the read status of all messages to true
+                            messagesRef.orderByChild("read").equalTo(false)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot messagesSnapshot) {
+                                            for (DataSnapshot messageSnapshot : messagesSnapshot.getChildren()) {
+                                                String messageId = messageSnapshot.getKey();  // Get the message ID
+                                                messagesRef.child(messageId).child("read").setValue(true)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Log.d("NewMessagesFromCustomer", "Message marked as read: " + messageId);
+                                                                } else {
+                                                                    Log.e("NewMessagesFromCustomer", "Failed to mark message as read: " + task.getException().getMessage());
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                            // Finish the activity and go back to the previous screen
+                                            finish();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            Log.e("NewMessagesFromCustomer", "Database error: " + databaseError.getMessage());
+                                        }
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("NewMessagesFromCustomer", "Database error: " + databaseError.getMessage());
+                    }
+                });
     }
 }

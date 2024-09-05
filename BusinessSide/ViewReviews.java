@@ -2,6 +2,7 @@ package com.example.halalcheck3.BusinessSide;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +40,10 @@ public class ViewReviews extends AppCompatActivity {
         recyclerViewReviews.setLayoutManager(new LinearLayoutManager(this));
         reviewAdapter = new ReviewAdapter(reviewList);
         recyclerViewReviews.setAdapter(reviewAdapter);
+
+        // Add a divider line between items
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
+        recyclerViewReviews.addItemDecoration(dividerItemDecoration);
 
         // Get current user's email
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

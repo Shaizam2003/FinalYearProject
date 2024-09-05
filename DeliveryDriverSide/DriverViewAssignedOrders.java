@@ -95,8 +95,11 @@ public class DriverViewAssignedOrders extends AppCompatActivity {
                             }
                             order.setOrderStatus(orderStatus); // Set the order status in the order object
 
-                            // Add the fully constructed order object to the list
-                            orderList.add(order);
+                            // Check if the status is not "Delivered"
+                            if (!"Delivered".equals(orderStatus.getCurrentStatus())) {
+                                // Add the fully constructed order object to the list
+                                orderList.add(order);
+                            }
                         }
                         assignedOrdersAdapter.notifyDataSetChanged();
                     }
@@ -107,4 +110,6 @@ public class DriverViewAssignedOrders extends AppCompatActivity {
                     }
                 });
     }
+
 }
+

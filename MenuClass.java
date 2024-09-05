@@ -127,12 +127,14 @@ public class MenuClass extends AppCompatActivity implements IMenuLoadListener, I
                             if (itemData != null) {
                                 String itemName = (String) itemData.get("itemName");
                                 Object itemPriceObj = itemData.get("itemPrice");
-
                                 double itemPrice;
+
                                 if (itemPriceObj instanceof Long) {
                                     itemPrice = ((Long) itemPriceObj).doubleValue(); // Convert Long to double
                                 } else if (itemPriceObj instanceof Integer) {
                                     itemPrice = ((Integer) itemPriceObj).doubleValue(); // Convert Integer to double
+                                } else if (itemPriceObj instanceof Double) {
+                                    itemPrice = (Double) itemPriceObj; // Directly use the Double value
                                 } else {
                                     itemPrice = 0.0; // Default value
                                     Log.e("MenuClass", "Unexpected itemPrice type: " + itemPriceObj.getClass().getName());

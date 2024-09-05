@@ -75,86 +75,94 @@ public class MyOrdersAdapter extends RecyclerView.Adapter<MyOrdersAdapter.OrderV
         }
 
         public void bind(Order order) {
-            // Directly reference the order details from the passed Order object
             String orderId = order.getOrderId();
-            String businessId = order.getBusinessId(); // Assuming this is in your Order class
+            String businessId = order.getBusinessId();
             String currentStatus = order.getCurrentStatus();
             String orderReference = order.getOrderReference();
 
-            // Reference to Firebase database
+            // Reference to Firebase database for the order
             DatabaseReference ordersRef = FirebaseDatabase.getInstance().getReference().child("orders").child(orderId);
 
+            // Fetch order details
             ordersRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        // Fetching the orderDetails node
                         DataSnapshot orderDetailsSnapshot = dataSnapshot.child("orderDetails");
-
-                        // Fetching the customerId and driverId
                         String customerId = orderDetailsSnapshot.child("customerId").getValue(String.class);
                         String driverId = orderDetailsSnapshot.child("driverId").getValue(String.class);
 
-                        // Fetching the business email if available
-                        String businessEmail = dataSnapshot.child("businessId").child("email").getValue(String.class);
+                        // Reference to Firebase database for the business
+                        DatabaseReference businessRef = FirebaseDatabase.getInstance().getReference().child("businesses").child(businessId);
 
-                        // Building the order details string
-                        StringBuilder orderDetails = new StringBuilder();
-                        orderDetails.append("Order Reference: ").append(orderReference).append("\n");
+                        // Fetch business details, specifically the address
+                        businessRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot businessSnapshot) {
+                                if (businessSnapshot.exists()) {
+                                    // Get business address
+                                    String businessAddress = businessSnapshot.child("address").getValue(String.class);
 
-                        if (businessEmail != null) {
-                            orderDetails.append("Business Email: ").append(businessEmail).append("\n");
-                        }
+                                    // Build order details string
+                                    StringBuilder orderDetails = new StringBuilder();
+                                    orderDetails.append("Order Reference: ").append(orderReference).append("\n");
+                                    orderDetails.append("Business Name: ").append(businessAddress).append("\n"); // Add business address
 
-                        // Append order items
-                        orderDetails.append("Items:\n");
-                        for (OrderItem item : order.getOrderItems()) {
-                            orderDetails.append(item.getItemName()).append(" - €")
-                                    .append(item.getItemPrice()).append(" x ")
-                                    .append(item.getQuantity()).append(" = €")
-                                    .append(item.getTotalPrice()).append("\n");
-                        }
+                                    // Append order items
+                                    orderDetails.append("Items:\n");
+                                    for (OrderItem item : order.getOrderItems()) {
+                                        orderDetails.append(item.getItemName()).append(" - €")
+                                                .append(item.getItemPrice()).append(" x ")
+                                                .append(item.getQuantity()).append(" = €")
+                                                .append(item.getTotalPrice()).append("\n");
+                                    }
 
-                        // Append current status
-                        orderDetails.append("Current Status: ").append(currentStatus).append("\n");
+                                    // Append current status
+                                    orderDetails.append("Current Status: ").append(currentStatus).append("\n");
 
-                        // Set the formatted details to the TextView
-                        txtOrderDetails.setText(orderDetails.toString());
+                                    // Set the formatted details to the TextView
+                                    txtOrderDetails.setText(orderDetails.toString());
 
-                        // Handle options visibility based on the order status
-                        if ("Out for Delivery".equals(currentStatus)) {
-                            llOptions.setVisibility(View.VISIBLE);
+                                    // Handle visibility of buttons based on order status
+                                    if ("Out for Delivery".equals(currentStatus)) {
+                                        llOptions.setVisibility(View.VISIBLE);
+                                        btnSendMessage.setOnClickListener(v -> {
+                                            Intent sendMessageIntent = new Intent(context, SendMessageToDriver.class);
+                                            sendMessageIntent.putExtra("ORDER_ID", orderId);
+                                            sendMessageIntent.putExtra("DRIVER_ID", driverId);
+                                            context.startActivity(sendMessageIntent);
+                                        });
 
-                            btnSendMessage.setOnClickListener(v -> {
-                                Intent sendMessageIntent = new Intent(context, SendMessageToDriver.class);
-                                sendMessageIntent.putExtra("ORDER_ID", orderId);
-                                sendMessageIntent.putExtra("DRIVER_ID", driverId); // Pass the driverId
-                                context.startActivity(sendMessageIntent);
-                            });
+                                        btnViewMessages.setOnClickListener(v -> {
+                                            Intent viewMessagesIntent = new Intent(context, ViewMessagesFromDriver.class);
+                                            viewMessagesIntent.putExtra("ORDER_ID", orderId);
+                                            viewMessagesIntent.putExtra("DRIVER_ID", driverId);
+                                            viewMessagesIntent.putExtra("CUSTOMER_ID", customerId);
+                                            context.startActivity(viewMessagesIntent);
+                                        });
+                                    } else {
+                                        llOptions.setVisibility(View.GONE);
+                                    }
 
-                            btnViewMessages.setOnClickListener(v -> {
-                                Intent viewMessagesIntent = new Intent(context, ViewMessagesFromDriver.class);
-                                viewMessagesIntent.putExtra("ORDER_ID", orderId);
-                                viewMessagesIntent.putExtra("DRIVER_ID", driverId);
-                                viewMessagesIntent.putExtra("CUSTOMER_ID", customerId);
-                                context.startActivity(viewMessagesIntent);
-                            });
-                        } else {
-                            llOptions.setVisibility(View.GONE);
-                        }
+                                    // Show or hide the review restaurant button based on status
+                                    if ("Delivered".equals(currentStatus)) {
+                                        btnReviewRestaurant.setVisibility(View.VISIBLE);
+                                        btnReviewRestaurant.setOnClickListener(v -> {
+                                            Intent reviewRestaurantIntent = new Intent(context, CustomerReview.class);
+                                            reviewRestaurantIntent.putExtra("BUSINESS_ID", businessId);
+                                            context.startActivity(reviewRestaurantIntent);
+                                        });
+                                    } else {
+                                        btnReviewRestaurant.setVisibility(View.GONE);
+                                    }
+                                }
+                            }
 
-                        // Show or hide the review restaurant button based on status
-                        if ("Delivered".equals(currentStatus)) {
-                            btnReviewRestaurant.setVisibility(View.VISIBLE);
-
-                            btnReviewRestaurant.setOnClickListener(v -> {
-                                Intent reviewRestaurantIntent = new Intent(context, CustomerReview.class);
-                                reviewRestaurantIntent.putExtra("BUSINESS_ID", businessId); // Pass the businessId
-                                context.startActivity(reviewRestaurantIntent);
-                            });
-                        } else {
-                            btnReviewRestaurant.setVisibility(View.GONE);
-                        }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.e("OrderAdapter", "Error fetching business details: " + databaseError.getMessage());
+                            }
+                        });
                     }
                 }
 

@@ -30,6 +30,7 @@ public class DriverHomePage extends AppCompatActivity {
         Button pickOrders = findViewById(R.id.pickOrders);
         Button viewAssignedOrders = findViewById(R.id.viewAssignedOrders);
         Button viewNewMessages = findViewById(R.id.viewNewMessages);
+        Button viewDeliveredOrders = findViewById(R.id.viewDeliveredOrders);
 
         pickOrders.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +50,25 @@ public class DriverHomePage extends AppCompatActivity {
             }
         });
 
+        viewDeliveredOrders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open RestaurantMenuActivity
+                Intent intent = new Intent(DriverHomePage.this, DriverSideDeliveredOrders.class);
+                startActivity(intent);
+            }
+        });
+
         viewNewMessages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open RestaurantMenuActivity
+                Intent intent = new Intent(DriverHomePage.this, NewMessagesFromCustomer.class);
+                startActivity(intent);
+            }
+        });
+
+      /*  viewNewMessages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Get the current user's driver ID
@@ -114,7 +133,7 @@ public class DriverHomePage extends AppCompatActivity {
                             }
                         });
             }
-        });
+        });*/
 
 
 

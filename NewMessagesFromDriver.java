@@ -7,11 +7,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.example.halalcheck3.adapter.NewMessageAdapter;
 import com.example.halalcheck3.model.Business;
 import com.example.halalcheck3.model.ChatMessage;
 import com.example.halalcheck3.model.Order;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,6 +45,8 @@ public class NewMessagesFromDriver extends AppCompatActivity {
         recyclerNewMessages = findViewById(R.id.recycler_new_messages);
         recyclerNewMessages.setLayoutManager(new LinearLayoutManager(this));
 
+        Button btnBack = findViewById(R.id.btnBack);
+
         // Initialize Firebase references
         ordersRef = FirebaseDatabase.getInstance().getReference("orders");
         businessesRef = FirebaseDatabase.getInstance().getReference("businesses");
@@ -55,6 +61,14 @@ public class NewMessagesFromDriver extends AppCompatActivity {
 
         String customerId = currentUser.getUid();
         fetchOrdersForCustomer(customerId);
+
+        // Set up the back button to mark messages as read and go back
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                markMessagesAsRead(customerId);
+            }
+        });
     }
 
     private void fetchOrdersForCustomer(String customerId) {
@@ -134,5 +148,54 @@ public class NewMessagesFromDriver extends AppCompatActivity {
                 Log.e("NewMessagesFromDriver", "Database error: " + databaseError.getMessage());
             }
         });
+    }
+
+    private void markMessagesAsRead(String customerId) {
+        ordersRef.orderByChild("orderDetails/customerId").equalTo(customerId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
+                            String orderId = orderSnapshot.getKey();  // Get the order ID
+
+                            // Reference to the messages node under the specific order ID
+                            DatabaseReference messagesRef = ordersRef.child(orderId).child("messages");
+
+                            // Update the read status of all messages to true
+                            messagesRef.orderByChild("read").equalTo(false)
+                                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot messagesSnapshot) {
+                                            for (DataSnapshot messageSnapshot : messagesSnapshot.getChildren()) {
+                                                String messageId = messageSnapshot.getKey();  // Get the message ID
+                                                messagesRef.child(messageId).child("read").setValue(true)
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (task.isSuccessful()) {
+                                                                    Log.d("NewMessagesFromDriver", "Message marked as read: " + messageId);
+                                                                } else {
+                                                                    Log.e("NewMessagesFromDriver", "Failed to mark message as read: " + task.getException().getMessage());
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                            // Finish the activity and go back to the previous screen
+                                            finish();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            Log.e("NewMessagesFromDriver", "Database error: " + databaseError.getMessage());
+                                        }
+                                    });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("NewMessagesFromDriver", "Database error: " + databaseError.getMessage());
+                    }
+                });
     }
 }

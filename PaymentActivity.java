@@ -62,7 +62,7 @@ public class PaymentActivity extends AppCompatActivity {
     private DatabaseReference mOrdersRef;
     private DatabaseReference mOrderReferenceCounterRef;
     String businessUserId;
-
+    String orderId;  // Add a class-level variable to store orderId
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,18 +79,16 @@ public class PaymentActivity extends AppCompatActivity {
         payment = findViewById(R.id.btnProcessPayment);
 
         PaymentConfiguration.init(this, PublishableKey);
-        // paymentSheet = new PaymentSheet(this, this::onPaymentResult);
+        paymentSheet = new PaymentSheet(this, this::onPaymentResult);
 
         // Retrieve total amount from intent
         totalAmount = getIntent().getDoubleExtra("totalAmount", 0);
         businessUserId = getIntent().getStringExtra("BusinessId");
 
         payment.setOnClickListener(view -> {
-            // Generate the order ID
-            String orderId = generateOrderId();
-
-            // Save the order to the database and generate the order reference inside the transaction
-            saveOrderToDatabase(orderId);
+            // Generate the order ID and store it in a class-level variable
+            orderId = generateOrderId();
+            createCustomer();
         });
     }
 
@@ -98,7 +96,7 @@ public class PaymentActivity extends AppCompatActivity {
         return mOrdersRef.push().getKey(); // Generate a unique order ID
     }
 
-    private void createCustomer () {
+    private void createCustomer() {
         String url = "https://api.stripe.com/v1/customers";
         StringRequest request = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
@@ -133,7 +131,7 @@ public class PaymentActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    private void getEphemeralKey () {
+    private void getEphemeralKey() {
         String url = "https://api.stripe.com/v1/ephemeral_keys";
         StringRequest request = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
@@ -177,7 +175,7 @@ public class PaymentActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    private void getClientSecret (String customerId, String ephemeralKey){
+    private void getClientSecret(String customerId, String ephemeralKey) {
         String url = "https://api.stripe.com/v1/payment_intents";
         StringRequest request = new StringRequest(Request.Method.POST, url,
                 new Response.Listener<String>() {
@@ -223,7 +221,7 @@ public class PaymentActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    private void paymentFlow () {
+    private void paymentFlow() {
         paymentSheet.presentWithPaymentIntent(ClientSecret, new PaymentSheet.Configuration(
                 "Learn with Shaiza",
                 new PaymentSheet.CustomerConfiguration(
@@ -233,22 +231,17 @@ public class PaymentActivity extends AppCompatActivity {
         ));
     }
 
-    /*private void onPaymentResult(PaymentSheetResult paymentSheetResult) {
+    private void onPaymentResult(PaymentSheetResult paymentSheetResult) {
         if (paymentSheetResult instanceof PaymentSheetResult.Completed) {
             // Payment successful, save order to database
-            saveOrderToDatabase();
+            saveOrderToDatabase(orderId);  // Pass the stored orderId
             Toast.makeText(this, "Payment Success", Toast.LENGTH_SHORT).show();
-
-            // Start intent to navigate to OrderStatusActivity
-            Intent intent = new Intent(PaymentActivity.this, OrderStatusActivity.class);
-            startActivity(intent);
         } else if (paymentSheetResult instanceof PaymentSheetResult.Failed) {
             Toast.makeText(this, "Payment Failed: " + ((PaymentSheetResult.Failed) paymentSheetResult).getError().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         } else if (paymentSheetResult instanceof PaymentSheetResult.Canceled) {
             Toast.makeText(this, "Payment Canceled", Toast.LENGTH_SHORT).show();
         }
-    }*/
-
+    }
 
     // Method to save order to database with an auto-incremented order reference
     private void saveOrderToDatabase(String orderId) {
@@ -292,8 +285,8 @@ public class PaymentActivity extends AppCompatActivity {
     // Separate method to save the order with reference to the database
     private void saveOrderToDatabaseWithReference(String orderId, Order order) {
         // Log debug info
-        Log.d("MyActivity", "Inside Save Order to Database");
-        Log.d("MyActivity", "Business user Id is " + order.getBusinessId());
+        Log.d("PaymentActivity", "Inside Save Order to Database");
+        Log.d("PaymentActivity", "Business user Id is " + order.getBusinessId());
 
         // Create a new OrderStatus object
         OrderStatus orderStatus = new OrderStatus();
@@ -345,7 +338,14 @@ public class PaymentActivity extends AppCompatActivity {
     private Order createOrder(String orderId, String orderReference) {
         // Retrieve selected items from intent
         List<MenuItem> selectedItems = (List<MenuItem>) getIntent().getSerializableExtra("selectedItems");
-        Log.d("MyActivity", "Inside Create order " + selectedItems.size());
+
+        if (selectedItems == null) {
+            Log.e("PaymentActivity", "Selected items are null");
+            Toast.makeText(this, "No items selected", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+        Log.d("PaymentActivity", "Inside Create order " + selectedItems.size());
 
         // Convert selected items to order items
         List<OrderItem> orderItems = new ArrayList<>();
@@ -357,7 +357,7 @@ public class PaymentActivity extends AppCompatActivity {
                     item.getItemPrice() // Total price is same as item price for now
             );
             orderItems.add(orderItem);
-            Log.d("MyActivity", String.valueOf(orderItems.size()));
+            Log.d("PaymentActivity", "Added item: " + item.getItemName());
         }
 
         // Get current timestamp

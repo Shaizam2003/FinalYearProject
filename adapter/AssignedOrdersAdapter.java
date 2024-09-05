@@ -64,8 +64,6 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
 
         String[] statuses = {"Out for Delivery", "Delivered"};
 
-        //String[] statuses = {"Delivered"};
-
         builder.setItems(statuses, (dialog, which) -> {
             String status = statuses[which];
 
@@ -116,8 +114,6 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
         Button btnUpdateStatus;
         Button btnSendMessages;
         Button btnViewMessages;
-
-
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -210,7 +206,23 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     OrderStatus orderStatus = snapshot.getValue(OrderStatus.class);
                     if (orderStatus != null) {
-                        txtCurrentStatus.setText("Current Status: " + orderStatus.getCurrentStatus());
+                        String currentStatus = orderStatus.getCurrentStatus();
+                        txtCurrentStatus.setText("Current Status: " + currentStatus);
+
+                        // Show or hide buttons based on the current status
+                        if ("Out for Delivery".equals(currentStatus)) {
+                            btnSendMessages.setVisibility(View.VISIBLE);
+                            btnViewMessages.setVisibility(View.VISIBLE);
+                        } else {
+                            btnSendMessages.setVisibility(View.GONE);
+                            btnViewMessages.setVisibility(View.GONE);
+                        }
+                        // Hide update status button if the order is delivered
+                        if ("Delivered".equals(currentStatus)) {
+                            btnUpdateStatus.setVisibility(View.GONE);
+                        } else {
+                            btnUpdateStatus.setVisibility(View.VISIBLE);
+                        }
                     }
                 }
 
@@ -227,6 +239,7 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
                     showUpdateStatusDialog(order, adapterPosition);
                 }
             });
+
             // Set OnClickListener for the send messages button
             btnSendMessages.setOnClickListener(v -> {
                 Intent intent = new Intent(context, SendMessageToCustomer.class);
@@ -244,8 +257,6 @@ public class AssignedOrdersAdapter extends RecyclerView.Adapter<AssignedOrdersAd
                 intent.putExtra("driverId", driverId);
                 context.startActivity(intent);
             });
-
-
         }
     }
 }

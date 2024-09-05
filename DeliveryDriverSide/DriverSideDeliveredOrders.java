@@ -1,8 +1,7 @@
-package com.example.halalcheck3.BusinessSide;
+package com.example.halalcheck3.DeliveryDriverSide;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -10,8 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.example.halalcheck3.R;
-import com.example.halalcheck3.adapter.OrderAdapter;
-import com.example.halalcheck3.adapter.OrdersDeliveredAdapter;
+import com.example.halalcheck3.adapter.AssignedOrdersAdapter;
 import com.example.halalcheck3.model.Order;
 import com.example.halalcheck3.model.OrderItem;
 import com.example.halalcheck3.model.OrderStatus;
@@ -26,10 +24,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewOrdersDelivered extends AppCompatActivity {
+public class DriverSideDeliveredOrders extends AppCompatActivity {
 
-    private RecyclerView recyclerOrdersDelivered;
-    private OrdersDeliveredAdapter ordersDeliveredAdapter;
+    private RecyclerView recyclerDeliveredOrders;
+    private AssignedOrdersAdapter deliveredOrdersAdapter;
     private List<Order> deliveredOrderList = new ArrayList<>();
     private DatabaseReference ordersRef;
     private FirebaseAuth mAuth;
@@ -37,56 +35,51 @@ public class ViewOrdersDelivered extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_orders_delivered); // Create this layout
+        setContentView(R.layout.activity_driver_side_delivered_orders);
+
+        recyclerDeliveredOrders = findViewById(R.id.recyclerDeliveredOrders);
+        recyclerDeliveredOrders.setLayoutManager(new LinearLayoutManager(this));
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser == null) {
-            // Redirect user to login screen or perform necessary authentication
-            Log.e("ViewOrdersDelivered", "User is not logged in");
+            // Handle the case where the user is not logged in
+            Log.e("DriverSideDeliveredOrders", "User is not logged in");
+            // Optionally, redirect to login screen or show an error message
             return;
         }
 
-        String businessId = currentUser.getUid();
+        String driverId = currentUser.getUid();
+        deliveredOrdersAdapter = new AssignedOrdersAdapter(deliveredOrderList, this, driverId);
+        recyclerDeliveredOrders.setAdapter(deliveredOrdersAdapter);
 
         ordersRef = FirebaseDatabase.getInstance().getReference().child("orders");
-
-        recyclerOrdersDelivered = findViewById(R.id.recycler_orders_delivered);
-        recyclerOrdersDelivered.setLayoutManager(new LinearLayoutManager(this));
-        ordersDeliveredAdapter = new OrdersDeliveredAdapter(deliveredOrderList, this); // Use OrdersDeliveredAdapter
-        recyclerOrdersDelivered.setAdapter(ordersDeliveredAdapter);
-
-        // Add a divider line between items
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this, DividerItemDecoration.VERTICAL);
-        recyclerOrdersDelivered.addItemDecoration(dividerItemDecoration);
-
-        loadDeliveredOrdersForBusiness(businessId);
+        loadDeliveredOrdersForDriver(driverId);
     }
 
-    private void loadDeliveredOrdersForBusiness(String businessId) {
-        ordersRef.orderByChild("orderDetails/businessId").equalTo(businessId)
+    private void loadDeliveredOrdersForDriver(String driverId) {
+        // Query for orders assigned to the driver and filter for "Delivered" status
+        ordersRef.orderByChild("orderDetails/driverId").equalTo(driverId)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        deliveredOrderList.clear();
+                        deliveredOrderList.clear(); // Clear the list before adding new data
                         for (DataSnapshot orderSnapshot : dataSnapshot.getChildren()) {
-                            // Get order status
-                            DataSnapshot orderStatusSnapshot = orderSnapshot.child("orderStatus");
-                            String currentStatus = orderStatusSnapshot.child("currentStatus").getValue(String.class);
+                            // Get the current status of the order
+                            String currentStatus = orderSnapshot.child("orderStatus/currentStatus").getValue(String.class);
 
-                            // Only add orders that have been delivered
                             if ("Delivered".equals(currentStatus)) {
                                 Order order = new Order();
                                 DataSnapshot orderDetailsSnapshot = orderSnapshot.child("orderDetails");
-
                                 if (orderDetailsSnapshot.exists()) {
                                     order.setOrderId(orderDetailsSnapshot.child("orderId").getValue(String.class));
                                     order.setBusinessId(orderDetailsSnapshot.child("businessId").getValue(String.class));
                                     order.setCustomerId(orderDetailsSnapshot.child("customerId").getValue(String.class));
                                     order.setTimestamp(orderDetailsSnapshot.child("timestamp").getValue(Long.class));
-                                    order.setOrderReference(orderDetailsSnapshot.child("orderReference").getValue(String.class)); // Set the order reference
+                                    order.setOrderReference(orderDetailsSnapshot.child("orderReference").getValue(String.class));
                                 }
 
+                                // Get order items
                                 DataSnapshot orderItemsSnapshot = orderSnapshot.child("orderItems");
                                 List<OrderItem> orderItems = new ArrayList<>();
                                 for (DataSnapshot itemSnapshot : orderItemsSnapshot.getChildren()) {
@@ -97,21 +90,24 @@ public class ViewOrdersDelivered extends AppCompatActivity {
                                 }
                                 order.setOrderItems(orderItems);
 
+                                // Get order status
+                                DataSnapshot orderStatusSnapshot = orderSnapshot.child("orderStatus");
+                                OrderStatus orderStatus = new OrderStatus();
                                 if (orderStatusSnapshot.exists()) {
-                                    OrderStatus orderStatus = new OrderStatus();
-                                    orderStatus.setCurrentStatus(currentStatus);
-                                    order.setOrderStatus(orderStatus);
+                                    orderStatus.setCurrentStatus(orderStatusSnapshot.child("currentStatus").getValue(String.class));
                                 }
+                                order.setOrderStatus(orderStatus); // Set the order status in the order object
 
+                                // Add the fully constructed order object to the list
                                 deliveredOrderList.add(order);
                             }
                         }
-                        ordersDeliveredAdapter.notifyDataSetChanged(); // Notify the adapter of data changes
+                        deliveredOrdersAdapter.notifyDataSetChanged(); // Notify the adapter of data changes
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e("ViewOrdersDelivered", "Database error: " + databaseError.getMessage());
+                        Log.e("DriverSideDeliveredOrders", "Database error: " + databaseError.getMessage());
                     }
                 });
     }

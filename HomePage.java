@@ -35,6 +35,7 @@ public class HomePage extends AppCompatActivity {
         Button buttonMakeOrder = findViewById(R.id.buttonMakeOrder);
         Button buttonMyOrders = findViewById(R.id.buttonMyOrders);
         Button buttonNewMessages = findViewById(R.id.buttonNewMessages);
+        Button buttonPastOrders = findViewById(R.id.buttonPastOrders);
 
         // Set up the click listener for the Make an Order button
         buttonMakeOrder.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +59,7 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
+        // Set up the click listener for the New Messages button
         buttonNewMessages.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -94,7 +96,7 @@ public class HomePage extends AppCompatActivity {
                                                         String messageId = messageSnapshot.getKey();  // Get the message ID
                                                         String receiverId = messageSnapshot.child("receiverId").getValue(String.class);
 
-                                                        // Check if the message is from the driver
+                                                        // Check if the message is for the customer
                                                         if (receiverId != null && receiverId.equals(customerId)) {
                                                             messagesRef.child(messageId).child("read").setValue(true)
                                                                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -132,5 +134,15 @@ public class HomePage extends AppCompatActivity {
             }
         });
 
+        // Set up the click listener for the Past Orders button (moved outside the NewMessages listener)
+        buttonPastOrders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open CustomerOrderHistory and pass the user ID
+                Intent intent = new Intent(HomePage.this, CustomerOrderHistory.class);
+                intent.putExtra("USER_ID", userId); // Pass user ID
+                startActivity(intent);
+            }
+        });
     }
 }
